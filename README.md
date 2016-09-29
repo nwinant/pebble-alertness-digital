@@ -17,4 +17,5 @@ TODO:
 * Add battery indicator.
 * Add bluetooth indicator.
 * Add user configuration for alarm, complications, and colors. (Currently, nothing is configurable.)
-* Release to the Pebble app store.
+* A bunch of testing, debugging, and combing for memory leaks, probably. (I haven't noticed any glaring issues yet, but _complacency is complicity!)_
+* Release first version to the Pebble app store.
