@@ -1,0 +1,26 @@
+{
+    "author": "Nathan Winant",
+    "dependencies": {},
+    "keywords": [],
+    "name": "timeminder",
+    "pebble": {
+        "displayName": "TimeMinder",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk"
+        ],
+        "uuid": "2e324679-8235-461d-abfd-991f2af6c2ec",
+        "watchapp": {
+            "watchface": true
+        }
+    },
+    "version": "1.0.0"
+}
