@@ -111,8 +111,8 @@ static void main_window_load(Window *window) {
   
   // Countdown layer
   s_countdown_layer = text_layer_create(GRect(
-    0, bounds.size.h - PBL_IF_ROUND_ELSE(38, 32),
-    bounds.size.w, PBL_IF_ROUND_ELSE(38, 32)));
+    0, bounds.size.h - PBL_IF_ROUND_ELSE(38, 33),
+    bounds.size.w, PBL_IF_ROUND_ELSE(38, 33)));
   text_layer_set_font(s_countdown_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
   text_layer_set_text_alignment(s_countdown_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_countdown_layer));
@@ -123,14 +123,6 @@ static void main_window_load(Window *window) {
   text_layer_set_background_color(s_countdown_layer, GColorClear);
   text_layer_set_text_color(s_date_layer, GColorBlack);
   text_layer_set_text_color(s_countdown_layer, GColorBlack);
-  
-  
-  
-  /*
-  //    ...    FIXME: remove!
-  vibes_cancel();
-  vibes_enqueue_custom_pattern(alert_vibe_pattern);
-  */
 }
 
 static void main_window_unload(Window *window) {
@@ -188,12 +180,6 @@ static void update_time() {
   // Display this time on the TextLayer
   text_layer_set_text(s_time_layer, time_buffer);
   update_complications(tick_time);
-  /*
-  // FIXME: remove!
-  static char countdown_buffer[3];
-  snprintf(countdown_buffer, sizeof(countdown_buffer), "??");
-  text_layer_set_text(s_countdown_layer, countdown_buffer);
-  */
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
@@ -211,12 +197,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
     vibes_enqueue_custom_pattern(alert_vibe_pattern);
   }
   
-  /*
-  // FIXME: remove!
-  static char countdown_buffer[3];
-  snprintf(countdown_buffer, sizeof(countdown_buffer), "!!");
-  text_layer_set_text(s_countdown_layer, countdown_buffer);
-  */
   APP_LOG(APP_LOG_LEVEL_INFO, " --"); // FIXME: remove!
 }
 
