@@ -24,7 +24,7 @@ Currently, it does the following:
 ### Pebble Round, emulated:
 
 ![Watch in Chalk emulator](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/chalk.png "Watch in Chalk emulator")
-![Watch in Chalk emulator, during quarter-hour alarm](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/chalk.png "Watch in Chalk emulator, during quarter-hour alarm")
+![Watch in Chalk emulator, during quarter-hour alarm](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/chalk-alarm.png "Watch in Chalk emulator, during quarter-hour alarm")
 
 ### Pebble Classic, emulated:
 
