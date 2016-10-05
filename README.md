@@ -5,14 +5,15 @@ _(Name subject to change, because that name seems terrible...)_
 
 A simple, clean, digital watchface for [Pebble](https://www.pebble.com/) which is intended to help the wearer be more aware of the passing of time.
 
-Currently, it does the following:
+Currently, it offers the following:
 
-* Vibes every 15 mins, with a vibe pattern that's sufficiently aggressive that it's hard to ignore.
-* Basic implementation of quiet time: Vibe is only enabled from 9:00am to 10:00pm (0900-2200).
+* Vibes at a user-specified interval, with a vibe pattern that's sufficiently aggressive that it's hard to ignore. Can be configured for every hour, every 30 mins, every 20 mins, every 15 mins, every 10 mins, every 5 mins, every 3 mins, or _every minute_ (heavens help you). Default is every 15 minutes.
+* Quiet time: configurable start and end time for alerts. Default is 9:00am to 10:00pm.
 * Displays time and date.
-* Displays minutes remaining til next alarm.
-
-
+* Displays minutes remaining until next alert.
+* Displays battery % remaining. (Can be hidden.)
+* Displays bluetooth connection status. (Can be hidden.) 
+* Configurable color scheme.
 
 ## Screenshots
 
@@ -35,8 +36,8 @@ Currently, it does the following:
 
 ## TODO
 
-* Add battery indicator.
-* Add bluetooth indicator.
-* Add user configuration for alarm, complications, and colors. (Currently, nothing is configurable.)
-* A bunch of testing, debugging, and combing for memory leaks, probably. (I haven't noticed any glaring issues yet, but _complacency is complicity!)_
+* Make alert vibe user-configurable.
+* Add vibrate on disconnect.
+* Currently vibes on alert minute every time watchface is loaded (i.e., vibes at :15 after; if you click into an app and then go back to the watchface within a minute, it'll vibe again.)
+* A bunch of testing, debugging, and combing for memory leaks, probably.
 * Release first version to the Pebble app store.
