@@ -1,12 +1,30 @@
 {
     "author": "Nathan Winant",
-    "dependencies": {},
+    "dependencies": {
+        "pebble-clay": "^1.0.2"
+    },
     "keywords": [],
     "name": "timeminder",
     "pebble": {
+        "capabilities": [
+            "configurable"
+        ],
         "displayName": "TimeMinder",
         "enableMultiJS": true,
-        "messageKeys": [],
+        "messageKeys": [
+            "MainBackgroundColor",
+            "MainForegroundColor",
+            "ComplicationsBackgroundColor",
+            "ComplicationsForegroundColor",
+            "AlertBackgroundColor",
+            "AlertForegroundColor",
+            "AlertsEnabled",
+            "AlertFrequency",
+            "AlertStartHour",
+            "AlertEndHour",
+            "ShowConnectionStatus",
+            "ShowBatteryStatus"
+        ],
         "projectType": "native",
         "resources": {
             "media": []
