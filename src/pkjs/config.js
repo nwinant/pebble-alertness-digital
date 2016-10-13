@@ -70,13 +70,13 @@ module.exports = [
       {
         "type": "color",
         "messageKey": "AlertBackgroundColor",
-        "defaultValue": "ffffff",
+        "defaultValue": "ff0000",
         "label": "Background Color"
       },
       {
         "type": "color",
         "messageKey": "AlertForegroundColor",
-        "defaultValue": "005500",
+        "defaultValue": "ffffff",
         "label": "Text Color"
       }
     ]
@@ -104,6 +104,8 @@ module.exports = [
         "label": "Enable Alerts",
         "defaultValue": true
       },
+     
+      
       {
         "type": "select",
         "messageKey": "AlertFrequency",
@@ -142,6 +144,22 @@ module.exports = [
             "label": "Every minute (!!!)",
             "value": "1"
           },
+        ]
+      },
+      {
+        "type": "select",
+        "messageKey": "AlertVibePattern",
+        "label": "Vibe Pattern",
+        "defaultValue": "short",
+        "options": [
+          {
+            "label": "Short",
+            "value": "short",
+          },
+          {
+            "label": "Very long",
+            "value": "very_long"
+          }
         ]
       },
       {
