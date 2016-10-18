@@ -1,18 +1,17 @@
 #include <pebble.h>
-#include "modules/vibe_patterns.h"
-#include "modules/configuration.h"
 #include "inttypes.h"
+#include "modules/configuration.h"
+#include "modules/alert_handler.h"
 
 
 // Debugging switches...
 
 #define DEV_EXCESSIVE_LOGGING 0
-#define DEV_ALERT_AMNESIA 0
 
 
 /* ====================================================================================
  *
- * Properties
+ * Fields
  *
  * ====================================================================================
  */
@@ -24,9 +23,6 @@ static TextLayer     *s_date_layer;
 static TextLayer     *s_countdown_layer;
 static TextLayer     *s_connection_layer;
 static TextLayer     *s_battery_layer;
-static uint8_t       alert_interval_remainder;
-static uint8_t       curr_hour;
-static bool          alert_active;
 static Configuration config;
 
 
@@ -167,7 +163,7 @@ static void refresh_display_layout(void) {
   layer_set_hidden((Layer *)s_countdown_layer,  !config.alerts_enabled);
   layer_set_hidden((Layer *)s_connection_layer, !config.show_connection_status);
   layer_set_hidden((Layer *)s_battery_layer,    !config.show_battery_status);
-  if (!config.alerts_enabled || !alert_active || alert_interval_remainder > 0) {
+  if (!config.alerts_enabled || !is_alert_active() || get_alert_interval_remainder() > 0) {
     window_set_background_color(s_main_window, config.main_bg_color);
     text_layer_set_background_color(s_complications_layer, config.comps_bg_color);
     text_layer_set_text_color(s_time_layer,       config.main_fg_color);
@@ -203,8 +199,8 @@ static void refresh_display_data(struct tm *tick_time) {
   if (config.alerts_enabled) {
     static char countdown_buffer[3];
     //static char countdown_buffer[10]; // FIXME: remove!
-    if (alert_active) {
-      snprintf(countdown_buffer, sizeof(countdown_buffer), "%d", config.alert_frequency_mins - alert_interval_remainder);
+    if (is_alert_active()) {
+      snprintf(countdown_buffer, sizeof(countdown_buffer), "%d", config.alert_frequency_mins - get_alert_interval_remainder());
       // FIXME: remove (parens) stuff
       //snprintf(countdown_buffer, sizeof(countdown_buffer), "%d (%d)", config.alert_frequency_mins - alert_interval_remainder, alert_frequency_mins);
     } else {
@@ -229,20 +225,8 @@ static void update_time(void) {
   time_t temp = time(NULL);
   struct tm *tick_time = localtime(&temp);
   
-  // Update counters
-  curr_hour                = tick_time->tm_hour;
-  uint8_t curr_min         = tick_time->tm_min;
-  alert_interval_remainder = curr_min % config.alert_frequency_mins;
-  alert_active             = 
-    ((curr_hour >= config.alert_start_hour)
-     || ((config.alert_start_hour - curr_hour == 1)
-         && (60 - curr_min <= config.alert_frequency_mins)))
-    &&
-    ((curr_hour < config.alert_end_hour)
-     || ((curr_hour = config.alert_end_hour)
-         && (curr_min == 0)));
-  
-  // Refresh the display
+  // Update & refresh
+  update_alert_handler(tick_time);
   refresh_display_layout();
   refresh_display_data(tick_time);
 }
@@ -254,27 +238,18 @@ static void update_time(void) {
  *
  * ====================================================================================
  */
+static void set_config(Configuration new_config) {
+  config = new_config;
+  update_alert_handler_config(config);
+}
+
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
-  if (config.alerts_enabled && alert_active && (alert_interval_remainder == 0)) {
-    vibes_cancel();
-    int32_t curr_time       = (tick_time->tm_hour * 10000) + (tick_time->tm_min * 100);
-    int32_t last_alert_time = (persist_exists(MESSAGE_KEY_LastAlertTickTime)) ? persist_read_int(MESSAGE_KEY_LastAlertTickTime) : 0;
-    if (DEV_EXCESSIVE_LOGGING) {
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Curr alert: %" PRIi32, curr_time);
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Last alert: %" PRIi32, last_alert_time);
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Vibe amnesia? %i", DEV_ALERT_AMNESIA);
-    }
-    if  ((curr_time != last_alert_time) || DEV_ALERT_AMNESIA) {
-      persist_write_int(MESSAGE_KEY_LastAlertTickTime, curr_time);
-      vibes_enqueue_custom_pattern(config.alert_vibe_pattern);
-    }
-  }
 }
 
 static void config_update_handler(DictionaryIterator *iter, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "New config incoming...");
-  config = update_config(iter, context);
+  set_config(update_config(iter, context));
   update_time();  // Refresh watch with changes
 }
 
@@ -325,7 +300,7 @@ static void deregister_handlers(void) {
  * ====================================================================================
  */
 static void init() {
-  config = load_config();
+  set_config(load_config());
   
   // Create main Window element and assign to pointer
   s_main_window = window_create();
