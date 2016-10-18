@@ -13,6 +13,7 @@ typedef struct Configuration {
   uint8_t     alert_frequency_mins;
   uint8_t     alert_start_hour;
   uint8_t     alert_end_hour;
+  char        *date_format;
   bool        show_connection_status;
   bool        show_battery_status;
   VibePattern alert_vibe_pattern;

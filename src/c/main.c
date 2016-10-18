@@ -1,6 +1,14 @@
 #include <pebble.h>
 #include "modules/vibe_patterns.h"
 #include "modules/configuration.h"
+#include "inttypes.h"
+
+
+// Debugging switches...
+
+#define DEV_EXCESSIVE_LOGGING 0
+#define DEV_ALERT_AMNESIA 0
+
 
 /* ====================================================================================
  *
@@ -20,7 +28,6 @@ static uint8_t       alert_interval_remainder;
 static uint8_t       curr_hour;
 static bool          alert_active;
 static Configuration config;
-                          // TODO: track last alert!
 
 
 /* ====================================================================================
@@ -46,14 +53,17 @@ static void main_window_load(Window *window) {
   primary_bounds.size.h      = (bounds.size.h / 2) + (time_layer_size_y / 2) + -8; // Includes fudge factor to tweak layout
   comp_bounds.size.h         = bounds.size.h - primary_bounds.size.h;
   date_bounds.size.h         = 28;
-  countdown_bounds.size.h    = PBL_IF_ROUND_ELSE(38, 33);
+  //date_bounds.size.h         = 32;
+  //countdown_bounds.size.h    = PBL_IF_ROUND_ELSE(38, 33);
+  //countdown_bounds.size.h    = PBL_IF_ROUND_ELSE(36, 31);
+  countdown_bounds.size.h    = PBL_IF_ROUND_ELSE(32, 27);
   connection_bounds.size.w   = connection_bounds.size.w - 10;
   connection_bounds.size.h   = PBL_IF_ROUND_ELSE(23, 20);
   connection_bounds.origin.x = 5;
   battery_bounds.size.w      = battery_bounds.size.w - 10;
   battery_bounds.size.h      = PBL_IF_ROUND_ELSE(23, 20);
   battery_bounds.origin.x    = 5;
-  if (config.invert_layout) {
+  if (!config.invert_layout) {
     comp_bounds.origin.y       = 0;
     primary_bounds.origin.y    = bounds.size.h - primary_bounds.size.h;
     time_bounds.origin.y       = (primary_bounds.size.h / 2) - (time_layer_size_y / 2);
@@ -70,28 +80,34 @@ static void main_window_load(Window *window) {
     connection_bounds.origin.y = comp_bounds.size.h - connection_bounds.size.h;
     battery_bounds.origin.y    = comp_bounds.size.h - battery_bounds.size.h;
   }
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Calculated bounds...");
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Window y:        %d", bounds.origin.y);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Window h:        %d", bounds.size.h);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Primary y:       %d", primary_bounds.origin.y);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Primary h:       %d", primary_bounds.size.h);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Complications y: %d", comp_bounds.origin.y);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Complications h: %d", comp_bounds.size.h);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Rendered bounds...");
+  if (DEV_EXCESSIVE_LOGGING) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Calculated bounds...");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Window y:        %d", bounds.origin.y);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Window h:        %d", bounds.size.h);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Primary y:       %d", primary_bounds.origin.y);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Primary h:       %d", primary_bounds.size.h);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Complications y: %d", comp_bounds.origin.y);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Complications h: %d", comp_bounds.size.h);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Rendered bounds...");
+  }
   
   // Primary layer
   s_primary_layer = text_layer_create(primary_bounds);
   layer_add_child(window_layer, text_layer_get_layer(s_primary_layer));
   GRect calc_primary_bounds = layer_get_bounds(text_layer_get_layer(s_primary_layer));
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Primary y:       %d", calc_primary_bounds.origin.y);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Primary h:       %d", calc_primary_bounds.size.h);
+  if (DEV_EXCESSIVE_LOGGING) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Primary y:       %d", calc_primary_bounds.origin.y);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Primary h:       %d", calc_primary_bounds.size.h);
+  }
   
   // Complications layer
   s_complications_layer = text_layer_create(comp_bounds);
   layer_add_child(window_layer, text_layer_get_layer(s_complications_layer));
   GRect calc_comp_bounds = layer_get_bounds(text_layer_get_layer(s_complications_layer));
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Complications y: %d", calc_comp_bounds.origin.y);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Complications h: %d", calc_comp_bounds.size.h);
+  if (DEV_EXCESSIVE_LOGGING) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Complications y: %d", calc_comp_bounds.origin.y);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- Complications h: %d", calc_comp_bounds.size.h);
+  }
   
   // Time layer
   s_time_layer = text_layer_create(time_bounds);
@@ -103,12 +119,15 @@ static void main_window_load(Window *window) {
   // Date layer
   s_date_layer = text_layer_create(date_bounds);
   text_layer_set_font(s_date_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  //text_layer_set_font(s_date_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
   text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
   layer_add_child(text_layer_get_layer(s_complications_layer), text_layer_get_layer(s_date_layer));
   
   // Countdown layer
   s_countdown_layer = text_layer_create(countdown_bounds);
-  text_layer_set_font(s_countdown_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
+  //text_layer_set_font(s_countdown_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
+  //text_layer_set_font(s_countdown_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28));
+  text_layer_set_font(s_countdown_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_text_alignment(s_countdown_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(s_countdown_layer));
   layer_add_child(text_layer_get_layer(s_complications_layer), text_layer_get_layer(s_countdown_layer));
@@ -148,7 +167,7 @@ static void refresh_display_layout(void) {
   layer_set_hidden((Layer *)s_countdown_layer,  !config.alerts_enabled);
   layer_set_hidden((Layer *)s_connection_layer, !config.show_connection_status);
   layer_set_hidden((Layer *)s_battery_layer,    !config.show_battery_status);
-  if (!config.alerts_enabled || (alert_interval_remainder > 0)) {
+  if (!config.alerts_enabled || !alert_active || alert_interval_remainder > 0) {
     window_set_background_color(s_main_window, config.main_bg_color);
     text_layer_set_background_color(s_complications_layer, config.comps_bg_color);
     text_layer_set_text_color(s_time_layer,       config.main_fg_color);
@@ -174,8 +193,10 @@ static void refresh_display_data(struct tm *tick_time) {
   text_layer_set_text(s_time_layer, time_buffer);
   
   // Date
-  static char date_buffer[11];
-  strftime(date_buffer, sizeof(date_buffer), "%a %b %e", tick_time);
+  //static char date_buffer[11];
+  //strftime(date_buffer, sizeof(date_buffer), "%a %b %e", tick_time);
+  static char date_buffer[15];
+  strftime(date_buffer, sizeof(date_buffer), config.date_format, tick_time);
   text_layer_set_text(s_date_layer, date_buffer);
   
   // Countdown
@@ -187,7 +208,8 @@ static void refresh_display_data(struct tm *tick_time) {
       // FIXME: remove (parens) stuff
       //snprintf(countdown_buffer, sizeof(countdown_buffer), "%d (%d)", config.alert_frequency_mins - alert_interval_remainder, alert_frequency_mins);
     } else {
-      snprintf(countdown_buffer, sizeof(countdown_buffer), "-");
+      //snprintf(countdown_buffer, sizeof(countdown_buffer), "-");
+      snprintf(countdown_buffer, sizeof(countdown_buffer), " ");
     }
     text_layer_set_text(s_countdown_layer, countdown_buffer);
   }
@@ -209,8 +231,16 @@ static void update_time(void) {
   
   // Update counters
   curr_hour                = tick_time->tm_hour;
-  alert_interval_remainder = tick_time->tm_min % config.alert_frequency_mins;
-  alert_active             = (curr_hour >= config.alert_start_hour) && (curr_hour < config.alert_end_hour);
+  uint8_t curr_min         = tick_time->tm_min;
+  alert_interval_remainder = curr_min % config.alert_frequency_mins;
+  alert_active             = 
+    ((curr_hour >= config.alert_start_hour)
+     || ((config.alert_start_hour - curr_hour == 1)
+         && (60 - curr_min <= config.alert_frequency_mins)))
+    &&
+    ((curr_hour < config.alert_end_hour)
+     || ((curr_hour = config.alert_end_hour)
+         && (curr_min == 0)));
   
   // Refresh the display
   refresh_display_layout();
@@ -228,7 +258,17 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
   if (config.alerts_enabled && alert_active && (alert_interval_remainder == 0)) {
     vibes_cancel();
-    vibes_enqueue_custom_pattern(config.alert_vibe_pattern);
+    int32_t curr_time       = (tick_time->tm_hour * 10000) + (tick_time->tm_min * 100);
+    int32_t last_alert_time = (persist_exists(MESSAGE_KEY_LastAlertTickTime)) ? persist_read_int(MESSAGE_KEY_LastAlertTickTime) : 0;
+    if (DEV_EXCESSIVE_LOGGING) {
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Curr alert: %" PRIi32, curr_time);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Last alert: %" PRIi32, last_alert_time);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Vibe amnesia? %i", DEV_ALERT_AMNESIA);
+    }
+    if  ((curr_time != last_alert_time) || DEV_ALERT_AMNESIA) {
+      persist_write_int(MESSAGE_KEY_LastAlertTickTime, curr_time);
+      vibes_enqueue_custom_pattern(config.alert_vibe_pattern);
+    }
   }
 }
 
@@ -239,7 +279,8 @@ static void config_update_handler(DictionaryIterator *iter, void *context) {
 }
 
 static void bluetooth_handler(bool connected) {
-  text_layer_set_text(s_connection_layer, connected ? "..." : "  !");
+  //text_layer_set_text(s_connection_layer, connected ? "..." : "  !");
+  text_layer_set_text(s_connection_layer, connected ? "" : "  !");
 }
 
 static void battery_handler(BatteryChargeState charge_state) {
@@ -255,6 +296,7 @@ static void battery_handler(BatteryChargeState charge_state) {
 
 static void register_handlers(void) {
   // Configuration
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Registering config handler...");
   app_message_register_inbox_received(config_update_handler);
   app_message_open(128, 128);
   // Ticks

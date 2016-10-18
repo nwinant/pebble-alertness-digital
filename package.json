@@ -24,7 +24,9 @@
             "AlertStartHour",
             "AlertEndHour",
             "ShowConnectionStatus",
-            "ShowBatteryStatus"
+            "ShowBatteryStatus",
+            "EnableFlip",
+            "LastAlertTickTime"
         ],
         "projectType": "native",
         "resources": {

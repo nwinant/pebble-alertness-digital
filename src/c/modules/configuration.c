@@ -1,6 +1,7 @@
 #include <pebble.h>
 #include "configuration.h"
 #include "vibe_patterns.h"
+#include "inttypes.h"
 
 Configuration load_config(void) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Loading config");
@@ -10,8 +11,6 @@ Configuration load_config(void) {
   // Build & return Configuration...
   Configuration result = {
     // Display
-    .invert_layout = 1, // FIXME: configurize!
-    
     .main_bg_color = persist_exists(MESSAGE_KEY_MainBackgroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_MainBackgroundColor))
       : GColorBlack,
@@ -30,6 +29,9 @@ Configuration load_config(void) {
     .alert_fg_color = persist_exists(MESSAGE_KEY_AlertForegroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_AlertForegroundColor))
       : PBL_IF_COLOR_ELSE(GColorWhite, GColorBlack),
+    .invert_layout = persist_exists(MESSAGE_KEY_EnableFlip) 
+      ? persist_read_bool(MESSAGE_KEY_EnableFlip)
+      : 0,
     // Alerts
     .alerts_enabled = persist_exists(MESSAGE_KEY_AlertsEnabled) 
       ? persist_read_bool(MESSAGE_KEY_AlertsEnabled)
@@ -73,6 +75,10 @@ Configuration load_config(void) {
       ? persist_read_int(MESSAGE_KEY_AlertEndHour)
       : 22,
     // Misc
+    // FIXME: configurize
+    //.date_format = "%a %b %e",
+    .date_format = "%a %Y-%m-%d",
+    
     .show_connection_status = persist_exists(MESSAGE_KEY_ShowConnectionStatus) 
       ? persist_read_bool(MESSAGE_KEY_ShowConnectionStatus)
       : 1,
@@ -85,30 +91,26 @@ Configuration load_config(void) {
   
   
   
-    // Pre-processing...
+    // Post-processing...
   //   FIXME:  http://stackoverflow.com/questions/17250480/c-declaring-int-array-inside-struct
   if (persist_exists(MESSAGE_KEY_AlertVibePattern)) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "User vibe!");
     char buffer[32];
     persist_read_string(MESSAGE_KEY_AlertVibePattern, buffer, sizeof(buffer));
     result.alert_vibe_pattern = get_vibe_pattern_by_string(buffer);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "... Received user vibe!");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "... Received user vibe: %s", buffer);
   } else {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Default vibe!");
-    result.alert_vibe_pattern = get_vibe_pattern_by_string("short");
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "... Received default vibe!");
+    //result.alert_vibe_pattern = get_vibe_pattern_by_string("short");
+    result.alert_vibe_pattern = get_vibe_pattern_by_string("very_long");
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "... Using default vibe.");
   }
-  
-  
-  
   
   return result;
 }
 
 Configuration update_config(DictionaryIterator *iter, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating config");
-  
-  // Display prefs
   Tuple *main_bg_color_t = dict_find(iter, MESSAGE_KEY_MainBackgroundColor);
   if (main_bg_color_t) {
     persist_write_int(MESSAGE_KEY_MainBackgroundColor, main_bg_color_t->value->int32);
@@ -128,10 +130,15 @@ Configuration update_config(DictionaryIterator *iter, void *context) {
   Tuple *alert_bg_color_t = dict_find(iter, MESSAGE_KEY_AlertBackgroundColor);
   if (alert_bg_color_t) {
     persist_write_int(MESSAGE_KEY_AlertBackgroundColor, alert_bg_color_t->value->int32);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- AlertBackgroundColor: %" PRIu32, persist_read_int(MESSAGE_KEY_AlertBackgroundColor));
   }
   Tuple *alert_fg_color_t = dict_find(iter, MESSAGE_KEY_AlertForegroundColor);
   if (alert_fg_color_t) {
     persist_write_int(MESSAGE_KEY_AlertForegroundColor, alert_fg_color_t->value->int32);
+  }
+  Tuple *invert_layout_t = dict_find(iter, MESSAGE_KEY_EnableFlip);
+  if (invert_layout_t) {
+    persist_write_bool(MESSAGE_KEY_EnableFlip, invert_layout_t->value->int32 == 1);
   }
   
   // Alert prefs
@@ -151,11 +158,19 @@ Configuration update_config(DictionaryIterator *iter, void *context) {
   }
   Tuple *alert_start_hour_t = dict_find(iter, MESSAGE_KEY_AlertStartHour);
   if (alert_start_hour_t) {
-    persist_write_int(MESSAGE_KEY_AlertStartHour, alert_start_hour_t->value->int32);
+    //persist_write_int(MESSAGE_KEY_AlertStartHour, alert_start_hour_t->value->int32);
+    // FIXME: needs more rigorous error-checking...
+    persist_write_int(MESSAGE_KEY_AlertStartHour, 
+                      atoi(alert_start_hour_t->value->cstring));
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- AlertStartHour: %" PRIu32, persist_read_int(MESSAGE_KEY_AlertStartHour));
   }
   Tuple *alert_end_hour_t = dict_find(iter, MESSAGE_KEY_AlertEndHour);
   if (alert_end_hour_t) {
-    persist_write_int(MESSAGE_KEY_AlertEndHour, alert_end_hour_t->value->int32);
+    //persist_write_int(MESSAGE_KEY_AlertEndHour, alert_end_hour_t->value->int32);
+    // FIXME: needs more rigorous error-checking...
+    persist_write_int(MESSAGE_KEY_AlertEndHour, 
+                      atoi(alert_end_hour_t->value->cstring));
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- AlertEndHour: %" PRIu32, persist_read_int(MESSAGE_KEY_AlertEndHour));
   }
   
   // Misc

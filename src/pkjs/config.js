@@ -14,6 +14,38 @@ module.exports = [
     "items": [
       {
         "type": "heading",
+        "defaultValue": "Quick Settings"
+      },
+      {
+        "type": "toggle",
+        "messageKey": "AlertsEnabled",
+        "label": "Allow Vibrating Alerts",
+        "defaultValue": true
+      },
+      {
+        "type": "heading",
+        "defaultValue": "Switching this off will mute all watchface vibrations.",
+        "size": 6
+      },
+    ]
+  },
+  
+  
+  {
+    "type": "submit",
+    "defaultValue": "Save All Settings"
+  },
+  
+  
+  {
+    "type": "section",
+    "items": [
+      {
+        "type": "heading",
+        "defaultValue": "Layout"
+      },
+      {
+        "type": "heading",
         "defaultValue": "Time Colors"
       },
       {
@@ -70,7 +102,7 @@ module.exports = [
       {
         "type": "color",
         "messageKey": "AlertBackgroundColor",
-        "defaultValue": "ff0000",
+        "defaultValue": "550000",
         "label": "Background Color"
       },
       {
@@ -83,7 +115,10 @@ module.exports = [
   },
   
   
-  
+  {
+    "type": "submit",
+    "defaultValue": "Save All Settings"
+  },
   
   
   {
@@ -98,14 +133,6 @@ module.exports = [
         "defaultValue": "Repeating alerts that can trigger every hour, every 30 mins, every 15 mins, etc.",
         "size": 6
       },
-      {
-        "type": "toggle",
-        "messageKey": "AlertsEnabled",
-        "label": "Enable Alerts",
-        "defaultValue": true
-      },
-     
-      
       {
         "type": "select",
         "messageKey": "AlertFrequency",
@@ -150,42 +177,237 @@ module.exports = [
         "type": "select",
         "messageKey": "AlertVibePattern",
         "label": "Vibe Pattern",
-        "defaultValue": "short",
+        "defaultValue": "very_long",
         "options": [
-          {
-            "label": "Short",
-            "value": "short",
-          },
           {
             "label": "Very long",
             "value": "very_long"
+          },
+          {
+            "label": "Short",
+            "value": "short",
           }
         ]
       },
       {
-        "type": "slider",
+        "type": "select",
         "messageKey": "AlertStartHour",
         "label": "Alert Start Hour",
-        "description": "E.g., 9 = 0900 (9:00am), 22 = 2200 (10:00pm), etc.",
-        "defaultValue": 9,
-        "min": 0,
-        "max": 24,
-        "step": 1
+        "defaultValue": "9",
+        "options": [
+          {
+            "label": "Midnight",
+            "value": "0"
+          },
+          {
+            "label": "1:00 am",
+            "value": "1"
+          },
+          {
+            "label": "2:00 am",
+            "value": "2"
+          },
+          {
+            "label": "3:00 am",
+            "value": "3"
+          },
+          {
+            "label": "4:00 am",
+            "value": "4"
+          },
+          {
+            "label": "5:00 am",
+            "value": "5"
+          },
+          {
+            "label": "6:00 am",
+            "value": "6"
+          },
+          {
+            "label": "7:00 am",
+            "value": "7"
+          },
+          {
+            "label": "8:00 am",
+            "value": "8"
+          },
+          {
+            "label": "9:00 am",
+            "value": "9"
+          },
+          {
+            "label": "10:00 am",
+            "value": "10"
+          },
+          {
+            "label": "11:00 am",
+            "value": "11"
+          },
+          {
+            "label": "Noon",
+            "value": "12"
+          },
+          {
+            "label": "1:00 pm",
+            "value": "13"
+          },
+          {
+            "label": "2:00 pm",
+            "value": "14"
+          },
+          {
+            "label": "3:00 pm",
+            "value": "15"
+          },
+          {
+            "label": "4:00 pm",
+            "value": "16"
+          },
+          {
+            "label": "5:00 pm",
+            "value": "17"
+          },
+          {
+            "label": "6:00 pm",
+            "value": "18"
+          },
+          {
+            "label": "7:00 pm",
+            "value": "19"
+          },
+          {
+            "label": "8:00 pm",
+            "value": "20"
+          },
+          {
+            "label": "9:00 pm",
+            "value": "21"
+          },
+          {
+            "label": "10:00 pm",
+            "value": "22"
+          },
+          {
+            "label": "11:00 pm",
+            "value": "23"
+          },
+          {
+            "label": "Midnight",
+            "value": "24"
+          }
+        ]
       },
       {
-        "type": "slider",
+        "type": "select",
         "messageKey": "AlertEndHour",
         "label": "Alert End Hour",
-        "defaultValue": 22,
-        "min": 0,
-        "max": 24,
-        "step": 1
+        "defaultValue": "22",
+        "options": [
+          {
+            "label": "Midnight",
+            "value": "0"
+          },
+          {
+            "label": "1:00 am",
+            "value": "1"
+          },
+          {
+            "label": "2:00 am",
+            "value": "2"
+          },
+          {
+            "label": "3:00 am",
+            "value": "3"
+          },
+          {
+            "label": "4:00 am",
+            "value": "4"
+          },
+          {
+            "label": "5:00 am",
+            "value": "5"
+          },
+          {
+            "label": "6:00 am",
+            "value": "6"
+          },
+          {
+            "label": "7:00 am",
+            "value": "7"
+          },
+          {
+            "label": "8:00 am",
+            "value": "8"
+          },
+          {
+            "label": "9:00 am",
+            "value": "9"
+          },
+          {
+            "label": "10:00 am",
+            "value": "10"
+          },
+          {
+            "label": "11:00 am",
+            "value": "11"
+          },
+          {
+            "label": "Noon",
+            "value": "12"
+          },
+          {
+            "label": "1:00 pm",
+            "value": "13"
+          },
+          {
+            "label": "2:00 pm",
+            "value": "14"
+          },
+          {
+            "label": "3:00 pm",
+            "value": "15"
+          },
+          {
+            "label": "4:00 pm",
+            "value": "16"
+          },
+          {
+            "label": "5:00 pm",
+            "value": "17"
+          },
+          {
+            "label": "6:00 pm",
+            "value": "18"
+          },
+          {
+            "label": "7:00 pm",
+            "value": "19"
+          },
+          {
+            "label": "8:00 pm",
+            "value": "20"
+          },
+          {
+            "label": "9:00 pm",
+            "value": "21"
+          },
+          {
+            "label": "10:00 pm",
+            "value": "22"
+          },
+          {
+            "label": "11:00 pm",
+            "value": "23"
+          },
+          {
+            "label": "Midnight",
+            "value": "24"
+          }
+        ]
       }
     ]
   },
   
-      
-      
       
   {
     "type": "section",
@@ -208,13 +430,10 @@ module.exports = [
       }
     ]
   },
-      
-      
-      
   
   
   {
     "type": "submit",
-    "defaultValue": "Save Settings"
+    "defaultValue": "Save All Settings"
   }
 ];

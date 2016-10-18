@@ -61,8 +61,8 @@ typedef struct { char *key; uint32_t *val; } t_symstruct;
 
 static t_symstruct lookuptable[] = {
   { "short", alert_segments_short },
- { "also", alert_segments_short },
-  { "very_long", alert_segments_very_long }
+  { "very_long", alert_segments_very_long },
+  { "also", alert_segments_short }
 };
 
 #define NKEYS (int) (sizeof(lookuptable)/sizeof(t_symstruct))
@@ -72,7 +72,7 @@ VibePattern get_vibe_pattern_by_string(char *pattern_name) {
   if (1 == 1) {
   return (VibePattern) {
     .durations = alert_segments_very_long,
-    .num_segments = ARRAY_LENGTH(alert_segments_short)
+    .num_segments = ARRAY_LENGTH(alert_segments_very_long)
   };
   } else {
     
