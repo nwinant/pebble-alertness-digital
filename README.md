@@ -38,6 +38,5 @@ Currently, it offers the following:
 
 * Make alert vibe user-configurable.
 * Add vibrate on disconnect.
-* Currently vibes on alert minute every time watchface is loaded (i.e., vibes at :15 after; if you click into an app and then go back to the watchface within a minute, it'll vibe again.)
 * A bunch of testing, debugging, and combing for memory leaks, probably.
 * Release first version to the Pebble app store.
