@@ -15,6 +15,11 @@ Currently, it offers the following:
 * Displays bluetooth connection status. (Can be hidden.) 
 * Configurable color scheme.
 
+#### _Feedback_
+
+To report bugs, request features, or view the current TODOs, please visit the [issue tracker](https://github.com/nwinant/time-minder/issues).
+
+
 ## Screenshots
 
 ### Pebble Time, emulated:
@@ -31,12 +36,3 @@ Currently, it offers the following:
 
 ![Watch in Aplite emulator](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/aplite.png "Watch in Aplite emulator")
 ![Watch in Aplite emulator, during quarter-hour alarm](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/aplite-alarm.png "Watch in Aplite emulator, during quarter-hour alarm")
-
-
-
-## TODO
-
-* Make alert vibe user-configurable.
-* Add vibrate on disconnect.
-* A bunch of testing, debugging, and combing for memory leaks, probably.
-* Release first version to the Pebble app store.
