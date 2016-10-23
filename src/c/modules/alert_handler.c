@@ -1,35 +1,20 @@
 #include <pebble.h>
-#include "alert_handler.h"
 #include "vibe_patterns.h"
+#include "configuration.h"
+#include "alert_handler.h"
 #include "inttypes.h"
 
 
-// Debugging switches...
+/* ====  Debugging switches  ======================================================= */
 
 #define DEV_EXCESSIVE_LOGGING 0
 #define DEV_ALERT_AMNESIA 0
 
 
-/* ====================================================================================
- *
- * Fields
- *
- * ====================================================================================
- */
+/* ====  Variables  ================================================================ */
+
 static uint8_t       alert_interval_remainder;
 static bool          alert_active;
-static Configuration config;
-
-
-/* ====================================================================================
- *
- * Getters & setters
- *
- * ====================================================================================
- */
-void update_alert_handler_config(Configuration new_config) {
-  config = new_config;
-}
 
 uint8_t get_alert_interval_remainder(void) {
   return alert_interval_remainder;
@@ -40,12 +25,8 @@ bool is_alert_active(void) {
 }
 
 
-/* ====================================================================================
- *
- * The meaty bits
- *
- * ====================================================================================
- */
+/* ====  The meat  ================================================================= */
+
 void update_alert_handler(struct tm *tick_time) {
   uint8_t curr_hour        = tick_time->tm_hour;
   uint8_t curr_min         = tick_time->tm_min;
@@ -65,12 +46,12 @@ void update_alert_handler(struct tm *tick_time) {
     int32_t curr_time       = (tick_time->tm_hour * 10000) + (tick_time->tm_min * 100);
     int32_t last_alert_time = (persist_exists(MESSAGE_KEY_LastAlertTickTime)) ? persist_read_int(MESSAGE_KEY_LastAlertTickTime) : 0;
     if (DEV_EXCESSIVE_LOGGING) {
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Curr alert: %" PRIi32, curr_time);
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Last alert: %" PRIi32, last_alert_time);
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Vibe amnesia? %i", DEV_ALERT_AMNESIA);
     }
     if  ((curr_time != last_alert_time) || DEV_ALERT_AMNESIA) {
       persist_write_int(MESSAGE_KEY_LastAlertTickTime, curr_time);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Alert: %" PRIi32, curr_time);
       vibes_enqueue_custom_pattern(config.alert_vibe_pattern);
     }
   }

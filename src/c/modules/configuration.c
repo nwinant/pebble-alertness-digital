@@ -3,10 +3,16 @@
 #include "vibe_patterns.h"
 #include "inttypes.h"
 
-Configuration load_config(void) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Loading config");
-  
 
+/* ====  Variables  ================================================================ */
+
+Configuration config;
+
+
+/* ====  Functions  ================================================================ */
+
+void load_config(void) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Loading config");
   
   // Build & return Configuration...
   Configuration result = {
@@ -74,10 +80,13 @@ Configuration load_config(void) {
     .alert_end_hour = persist_exists(MESSAGE_KEY_AlertEndHour) 
       ? persist_read_int(MESSAGE_KEY_AlertEndHour)
       : 22,
+    
     // Misc
-    // FIXME: configurize
+    
+    // FIXME: configurize!
     //.date_format = "%a %b %e",
-    .date_format = "%a %Y-%m-%d",
+    //.date_format = "%a %Y-%m-%d",
+    .date_format = "%a %m-%d",
     
     .show_connection_status = persist_exists(MESSAGE_KEY_ShowConnectionStatus) 
       ? persist_read_bool(MESSAGE_KEY_ShowConnectionStatus)
@@ -106,10 +115,11 @@ Configuration load_config(void) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "... Using default vibe.");
   }
   
-  return result;
+  config = result;
+  //return result;
 }
 
-Configuration update_config(DictionaryIterator *iter, void *context) {
+void update_config(DictionaryIterator *iter, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating config");
   Tuple *main_bg_color_t = dict_find(iter, MESSAGE_KEY_MainBackgroundColor);
   if (main_bg_color_t) {
@@ -183,5 +193,6 @@ Configuration update_config(DictionaryIterator *iter, void *context) {
     persist_write_bool(MESSAGE_KEY_ShowBatteryStatus, show_battery_status_t->value->int32 == 1);
   }
   
-  return load_config();
+  load_config();
+  //return load_config();
 }

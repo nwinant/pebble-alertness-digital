@@ -1,6 +1,9 @@
 #pragma once
 #include <pebble.h>
 
+
+/* ====  Structs  ================================================================== */
+
 typedef struct Configuration {
   bool        invert_layout;
   GColor      main_bg_color;
@@ -19,6 +22,14 @@ typedef struct Configuration {
   VibePattern alert_vibe_pattern;
 } Configuration;
 
-Configuration load_config(void);
 
-Configuration update_config(DictionaryIterator *iter, void *context);
+/* ====  Variables  ================================================================ */
+
+extern Configuration config;
+
+
+/* ====  Functions  ================================================================ */
+
+void load_config(void);
+
+void update_config(DictionaryIterator *iter, void *context);
