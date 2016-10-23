@@ -8,15 +8,6 @@
 /* ====  Variables  ================================================================ */
 
 static Window        *s_main_window;
-/*
-static Configuration config;
-
-static void set_config(Configuration new_config) {
-  config = new_config;
-  set_alert_handler_config(config);
-  set_display_config(config);
-}
-*/
 
 
 /* ====  Timing  =================================================================== */
