@@ -20,6 +20,8 @@ static TextLayer     *s_countdown_layer;
 static TextLayer     *s_connection_layer;
 static TextLayer     *s_battery_layer;
 
+static GFont s_time_font;
+
 struct TextLayer *get_connection_layer(void) {
   return s_connection_layer;
 }
@@ -33,7 +35,9 @@ struct TextLayer *get_battery_layer(void) {
 
 static void main_window_load(Window *window) {  
   // Prepare to calculate layout
-  uint32_t time_layer_size_y = 62;  
+  //uint32_t time_layer_size_y = 62;  
+  uint32_t time_layer_size_y = 60;
+  int32_t time_bounds_origin_y_offset = -10;  
   Layer *window_layer        = window_get_root_layer(window);
   GRect bounds               = layer_get_bounds(window_layer);
   GRect primary_bounds       = bounds;
@@ -45,7 +49,7 @@ static void main_window_load(Window *window) {
   GRect battery_bounds       = comp_bounds;
   
   // Calculate layout
-  primary_bounds.size.h      = (bounds.size.h / 2) + (time_layer_size_y / 2) + -8; // Includes fudge factor to tweak layout
+  primary_bounds.size.h      = (bounds.size.h / 2) + (time_layer_size_y / 2);
   comp_bounds.size.h         = bounds.size.h - primary_bounds.size.h;
   //date_bounds.size.h         = 28;
   date_bounds.size.h         = 32;
@@ -61,7 +65,7 @@ static void main_window_load(Window *window) {
   if (!config.invert_layout) {
     comp_bounds.origin.y       = 0;
     primary_bounds.origin.y    = bounds.size.h - primary_bounds.size.h;
-    time_bounds.origin.y       = (primary_bounds.size.h / 2) - (time_layer_size_y / 2);
+    time_bounds.origin.y       = (primary_bounds.size.h / 2) - (time_layer_size_y / 2) + time_bounds_origin_y_offset; // Includes fudge factor to tweak layout
     date_bounds.origin.y       = comp_bounds.size.h - date_bounds.size.h;
     countdown_bounds.origin.y  = 0;
     connection_bounds.origin.y = 0;
@@ -107,7 +111,12 @@ static void main_window_load(Window *window) {
   // Time layer
   s_time_layer = text_layer_create(time_bounds);
   //text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
-  text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49));
+//  text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49));
+  text_layer_set_font(s_time_layer, s_time_font);
+
+  
+  
+  
   text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
   layer_add_child(text_layer_get_layer(s_primary_layer), text_layer_get_layer(s_time_layer));
   
@@ -156,11 +165,28 @@ static void main_window_unload(Window *window) {
   text_layer_destroy(s_complications_layer);
   text_layer_destroy(s_time_layer);
   text_layer_destroy(s_primary_layer);
+  fonts_unload_custom_font(s_time_font);
 }
 
 void init_display(Window *new_s_main_window) {
   // Create main Window element and assign to pointer
   s_main_window = new_s_main_window;
+  
+//  RESOURCE_ID_FONT_PERFECT_DOS_48
+//  FONT_OPEN_DIN_SCHRIFTEN_ENGSHRIFT_60
+  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_OPEN_DIN_SCHRIFTEN_ENGSHRIFT_60));
+  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_OPEN_DIN_SCHRIFTEN_ENGSHRIFT_48));
+  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_48));
+  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIN1451_ALT_G_60));
+  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_8_BIT_WONDER_48));
+//    s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIN_1451_STD_ENGSCHRIFT_60));
+  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_72));
+  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_62));
+
+  
+  
+  
+  
   
   // Set handlers to manage the elements inside the Window
   window_set_window_handlers(s_main_window, (WindowHandlers) {
@@ -179,7 +205,8 @@ void refresh_display_layout(void) {
   layer_set_hidden((Layer *)s_countdown_layer,  !config.alerts_enabled);
   layer_set_hidden((Layer *)s_connection_layer, !config.show_connection_status);
   layer_set_hidden((Layer *)s_battery_layer,    !config.show_battery_status);
-  if (!config.alerts_enabled || !is_alert_active() || get_alert_interval_remainder() > 0) {
+  //if (!config.alerts_enabled || !is_alert_timer_running() || get_alert_interval_remainder() > 0) {
+  if (!is_alert_currently_active()) {
     window_set_background_color(s_main_window, config.main_bg_color);
     text_layer_set_background_color(s_complications_layer, config.comps_bg_color);
     text_layer_set_text_color(s_time_layer,       config.main_fg_color);
@@ -215,7 +242,7 @@ void refresh_display_data(struct tm *tick_time) {
   if (config.alerts_enabled) {
     static char countdown_buffer[3];
     //static char countdown_buffer[10]; // FIXME: remove!
-    if (is_alert_active()) {
+    if (is_alert_timer_running()) {
       snprintf(countdown_buffer, sizeof(countdown_buffer), "%d", config.alert_frequency_mins - get_alert_interval_remainder());
       // FIXME: remove (parens) stuff
       //snprintf(countdown_buffer, sizeof(countdown_buffer), "%d (%d)", config.alert_frequency_mins - alert_interval_remainder, alert_frequency_mins);

@@ -31,7 +31,8 @@ void load_config(void) {
       : GColorBlack,
     .alert_bg_color = persist_exists(MESSAGE_KEY_AlertBackgroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_AlertBackgroundColor))
-      : PBL_IF_COLOR_ELSE(GColorRed, GColorWhite),
+      : PBL_IF_COLOR_ELSE(GColorFromHEX(550000), GColorWhite),
+      //: PBL_IF_COLOR_ELSE(GColorRed, GColorWhite),
     .alert_fg_color = persist_exists(MESSAGE_KEY_AlertForegroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_AlertForegroundColor))
       : PBL_IF_COLOR_ELSE(GColorWhite, GColorBlack),

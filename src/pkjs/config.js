@@ -1,7 +1,7 @@
 module.exports = [
   {
     "type": "heading",
-    "defaultValue": "Time Minder: Settings",
+    "defaultValue": "Digital Alertness: Settings",
     "size": 3
   },
   
