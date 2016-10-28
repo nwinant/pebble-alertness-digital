@@ -172,11 +172,8 @@ void init_display(Window *new_s_main_window) {
   // Create main Window element and assign to pointer
   s_main_window = new_s_main_window;
   
-//  RESOURCE_ID_FONT_PERFECT_DOS_48
-//  FONT_OPEN_DIN_SCHRIFTEN_ENGSHRIFT_60
   //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_OPEN_DIN_SCHRIFTEN_ENGSHRIFT_60));
   //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_OPEN_DIN_SCHRIFTEN_ENGSHRIFT_48));
-  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_48));
   //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIN1451_ALT_G_60));
   //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_8_BIT_WONDER_48));
 //    s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIN_1451_STD_ENGSCHRIFT_60));
