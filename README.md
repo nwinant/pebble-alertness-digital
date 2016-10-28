@@ -1,7 +1,5 @@
-Time Minder
-===========
-
-_(Name subject to change, because that name seems terrible...)_
+Alertness: Digital Watchface for Pebble
+=======================================
 
 A simple, clean, digital watchface for [Pebble](https://www.pebble.com/) which is intended to help the wearer be more aware of the passing of time.
 
