@@ -23,14 +23,3 @@ To report bugs, request features, or view the current TODOs, please visit the [i
 ### Pebble Time, emulated:
 
 ![Watch in Basalt emulator](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/basalt.png "Watch in Basalt emulator")
-![Watch in Basalt emulator, during quarter-hour alarm](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/basalt-alarm.png "Watch in Basalt emulator, during quarter-hour alarm")
-
-### Pebble Round, emulated:
-
-![Watch in Chalk emulator](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/chalk.png "Watch in Chalk emulator")
-![Watch in Chalk emulator, during quarter-hour alarm](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/chalk-alarm.png "Watch in Chalk emulator, during quarter-hour alarm")
-
-### Pebble Classic, emulated:
-
-![Watch in Aplite emulator](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/aplite.png "Watch in Aplite emulator")
-![Watch in Aplite emulator, during quarter-hour alarm](https://raw.githubusercontent.com/nwinant/time-minder/master/assets/screenshots/aplite-alarm.png "Watch in Aplite emulator, during quarter-hour alarm")
