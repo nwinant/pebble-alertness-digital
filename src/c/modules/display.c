@@ -21,6 +21,10 @@ static TextLayer     *s_connection_layer;
 static TextLayer     *s_battery_layer;
 
 static GFont s_time_font;
+static GFont s_date_font;
+static GFont s_countdown_font;
+static GFont s_connection_font;
+static GFont s_battery_font;
 
 struct TextLayer *get_connection_layer(void) {
   return s_connection_layer;
@@ -32,6 +36,12 @@ struct TextLayer *get_battery_layer(void) {
 
 
 /* ====  Create / Destroy  ========================================================= */
+
+static void configure_text_layer(TextLayer * text_layer, GFont font, GTextAlignment alignment, TextLayer * parent_text_layer) {
+  text_layer_set_font(text_layer, font);
+  text_layer_set_text_alignment(text_layer, alignment);
+  layer_add_child(text_layer_get_layer(parent_text_layer), text_layer_get_layer(text_layer));
+}
 
 static void main_window_load(Window *window) {  
   // Prepare to calculate layout
@@ -108,53 +118,25 @@ static void main_window_load(Window *window) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "- Complications h: %d", calc_comp_bounds.size.h);
   }
   
-  // Time layer
-  s_time_layer = text_layer_create(time_bounds);
-  //text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
-//  text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49));
-  text_layer_set_font(s_time_layer, s_time_font);
-
-  
-  
-  
-  text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
-  layer_add_child(text_layer_get_layer(s_primary_layer), text_layer_get_layer(s_time_layer));
-  
-  // Date layer
-  s_date_layer = text_layer_create(date_bounds);
-  //text_layer_set_font(s_date_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  text_layer_set_font(s_date_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
-  text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
-  layer_add_child(text_layer_get_layer(s_complications_layer), text_layer_get_layer(s_date_layer));
-  
-  // Countdown layer
-  s_countdown_layer = text_layer_create(countdown_bounds);
-  //text_layer_set_font(s_countdown_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
-  //text_layer_set_font(s_countdown_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28));
-  text_layer_set_font(s_countdown_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  text_layer_set_text_alignment(s_countdown_layer, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(s_countdown_layer));
-  layer_add_child(text_layer_get_layer(s_complications_layer), text_layer_get_layer(s_countdown_layer));
-  
-  // Connection layer
+  // Text layers
+  s_time_layer       = text_layer_create(time_bounds);
+  s_date_layer       = text_layer_create(date_bounds);
+  s_countdown_layer  = text_layer_create(countdown_bounds);
   s_connection_layer = text_layer_create(connection_bounds);
-  text_layer_set_font(s_connection_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-  text_layer_set_text_alignment(s_connection_layer, GTextAlignmentLeft);
-  layer_add_child(text_layer_get_layer(s_complications_layer), text_layer_get_layer(s_connection_layer));
-  
-  // Battery layer
-  s_battery_layer = text_layer_create(battery_bounds);
-  text_layer_set_font(s_battery_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-  text_layer_set_text_alignment(s_battery_layer, GTextAlignmentRight);
-  layer_add_child(text_layer_get_layer(s_complications_layer), text_layer_get_layer(s_battery_layer));
+  s_battery_layer    = text_layer_create(battery_bounds);
+  configure_text_layer(s_time_layer,       s_time_font,       GTextAlignmentCenter, s_primary_layer);
+  configure_text_layer(s_date_layer,       s_date_font,       GTextAlignmentCenter, s_complications_layer);
+  configure_text_layer(s_countdown_layer,  s_countdown_font,  GTextAlignmentCenter, s_complications_layer);
+  configure_text_layer(s_connection_layer, s_connection_font, GTextAlignmentLeft,   s_complications_layer);
+  configure_text_layer(s_battery_layer,    s_battery_font,    GTextAlignmentRight,  s_complications_layer);
   
   // Constant colors
-  text_layer_set_background_color(s_primary_layer, GColorClear);
-  text_layer_set_background_color(s_time_layer, GColorClear);
-  text_layer_set_background_color(s_date_layer, GColorClear);
-  text_layer_set_background_color(s_countdown_layer, GColorClear);
+  text_layer_set_background_color(s_primary_layer,    GColorClear);
+  text_layer_set_background_color(s_time_layer,       GColorClear);
+  text_layer_set_background_color(s_date_layer,       GColorClear);
+  text_layer_set_background_color(s_countdown_layer,  GColorClear);
   text_layer_set_background_color(s_connection_layer, GColorClear);
-  text_layer_set_background_color(s_battery_layer, GColorClear);
+  text_layer_set_background_color(s_battery_layer,    GColorClear);
 }
 
 static void main_window_unload(Window *window) {
@@ -168,30 +150,26 @@ static void main_window_unload(Window *window) {
   fonts_unload_custom_font(s_time_font);
 }
 
-void init_display(Window *new_s_main_window) {
-  // Create main Window element and assign to pointer
-  s_main_window = new_s_main_window;
-  
-  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_OPEN_DIN_SCHRIFTEN_ENGSHRIFT_60));
-  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_OPEN_DIN_SCHRIFTEN_ENGSHRIFT_48));
-  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIN1451_ALT_G_60));
-  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_8_BIT_WONDER_48));
-//    s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIN_1451_STD_ENGSCHRIFT_60));
-  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_72));
-  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_62));
+void load_fonts(void) {
+  //s_time_font       = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
+  //s_time_font       = fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49);
+  s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_62));
+  //s_date_font       = FONT_KEY_GOTHIC_24_BOLD);
+  s_date_font       = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
+  //s_countdown_font  = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
+  //s_countdown_font  = fonts_get_system_font(FONT_KEY_GOTHIC_28);
+  s_countdown_font  = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
+  s_connection_font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
+  s_battery_font    = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
+}
 
-  
-  
-  
-  
-  
-  // Set handlers to manage the elements inside the Window
+void init_display(Window *new_s_main_window) {
+  s_main_window = new_s_main_window;
+  load_fonts();
   window_set_window_handlers(s_main_window, (WindowHandlers) {
     .load = main_window_load,
     .unload = main_window_unload
   });
-
-  // Show the Window on the watch, with animated=true
   window_stack_push(s_main_window, true);
 }
 
@@ -202,7 +180,6 @@ void refresh_display_layout(void) {
   layer_set_hidden((Layer *)s_countdown_layer,  !config.alerts_enabled);
   layer_set_hidden((Layer *)s_connection_layer, !config.show_connection_status);
   layer_set_hidden((Layer *)s_battery_layer,    !config.show_battery_status);
-  //if (!config.alerts_enabled || !is_alert_timer_running() || get_alert_interval_remainder() > 0) {
   if (!is_alert_currently_active()) {
     window_set_background_color(s_main_window, config.main_bg_color);
     text_layer_set_background_color(s_complications_layer, config.comps_bg_color);
@@ -212,8 +189,6 @@ void refresh_display_layout(void) {
     text_layer_set_text_color(s_connection_layer, config.comps_fg_color);
     text_layer_set_text_color(s_battery_layer,    config.comps_fg_color);
   } else {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "- AlertBackgroundColor: %" PRIu32, persist_read_int(MESSAGE_KEY_AlertBackgroundColor));
-    
     window_set_background_color(s_main_window, config.alert_bg_color);
     text_layer_set_background_color(s_complications_layer, GColorClear);
     text_layer_set_text_color(s_time_layer,       config.alert_fg_color);
