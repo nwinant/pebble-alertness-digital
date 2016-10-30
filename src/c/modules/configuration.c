@@ -6,49 +6,74 @@
 
 /* ====  Variables  ================================================================ */
 
+static bool initialized = false;
+static Configuration defaults;
 Configuration config;
 
 
 /* ====  Functions  ================================================================ */
 
+void load_defaults(void) {
+  if (!initialized) {
+    initialized = true;
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Loading defaults");
+    defaults = (Configuration) {
+      .main_bg_color = GColorBlack,
+      .main_fg_color = GColorWhite,
+      .comps_bg_color = PBL_IF_COLOR_ELSE(GColorRed, GColorWhite),
+      .comps_fg_color = GColorBlack,
+      .alert_bg_color = PBL_IF_COLOR_ELSE(GColorFromHEX(0x550000), GColorWhite),
+      .alert_fg_color = PBL_IF_COLOR_ELSE(GColorWhite, GColorBlack),
+      .invert_layout = 0,
+      .alerts_enabled = 1,
+      .alert_frequency_mins = 15,
+      //.alert_frequency_mins = 1,
+      .alert_start_hour = 9,
+      .alert_end_hour = 22,
+      //.alert_end_hour = 23,
+      //.date_format = "%a %b %e",
+      //.date_format = "%a %Y-%m-%d",
+      .date_format = "%a %m-%d",
+      .show_connection_status = 1,
+      .show_battery_status = 1
+    };
+  }
+}
+
 void load_config(void) {
+  load_defaults();
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Loading config");
-  
-  // Build & return Configuration...
   Configuration result = {
     // Display
     .main_bg_color = persist_exists(MESSAGE_KEY_MainBackgroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_MainBackgroundColor))
-      : GColorBlack,
+      : defaults.main_bg_color,
     .main_fg_color = persist_exists(MESSAGE_KEY_MainForegroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_MainForegroundColor))
-      : GColorWhite,
+      : defaults.main_fg_color,
     .comps_bg_color = persist_exists(MESSAGE_KEY_ComplicationsBackgroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_ComplicationsBackgroundColor))
-      : PBL_IF_COLOR_ELSE(GColorRed, GColorWhite),
+      : defaults.comps_bg_color,
     .comps_fg_color = persist_exists(MESSAGE_KEY_ComplicationsForegroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_ComplicationsForegroundColor))
-      : GColorBlack,
+      : defaults.comps_fg_color,
     .alert_bg_color = persist_exists(MESSAGE_KEY_AlertBackgroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_AlertBackgroundColor))
-      : PBL_IF_COLOR_ELSE(GColorFromHEX(550000), GColorWhite),
-      //: PBL_IF_COLOR_ELSE(GColorRed, GColorWhite),
+      : defaults.alert_bg_color,
     .alert_fg_color = persist_exists(MESSAGE_KEY_AlertForegroundColor) 
       ? GColorFromHEX(persist_read_int(MESSAGE_KEY_AlertForegroundColor))
-      : PBL_IF_COLOR_ELSE(GColorWhite, GColorBlack),
+      : defaults.alert_fg_color,
     .invert_layout = persist_exists(MESSAGE_KEY_EnableFlip) 
       ? persist_read_bool(MESSAGE_KEY_EnableFlip)
-      : 0,
+      : defaults.invert_layout,
     // Alerts
     .alerts_enabled = persist_exists(MESSAGE_KEY_AlertsEnabled) 
       ? persist_read_bool(MESSAGE_KEY_AlertsEnabled)
-      : 1,
+      : defaults.alerts_enabled,
     .alert_frequency_mins = persist_exists(MESSAGE_KEY_AlertFrequency) 
       ? persist_read_int(MESSAGE_KEY_AlertFrequency)
-      : 15,
-    
-//    .alert_vibe_pattern = vibe_pattern,
-    
+      : defaults.alert_frequency_mins,
+    //.alert_vibe_pattern = vibe_pattern,
     /*
     // FIXME: configure!
     uint32_t *alert_segments;
@@ -74,34 +99,23 @@ void load_config(void) {
       .num_segments = ARRAY_LENGTH(alert_segments_very_long)
     },
     */
-    
     .alert_start_hour = persist_exists(MESSAGE_KEY_AlertStartHour) 
       ? persist_read_int(MESSAGE_KEY_AlertStartHour)
-      : 9,
+      : defaults.alert_start_hour,
     .alert_end_hour = persist_exists(MESSAGE_KEY_AlertEndHour) 
       ? persist_read_int(MESSAGE_KEY_AlertEndHour)
-      : 22,
-    
+      : defaults.alert_end_hour,
     // Misc
-    
-    // FIXME: configurize!
-    //.date_format = "%a %b %e",
-    //.date_format = "%a %Y-%m-%d",
-    .date_format = "%a %m-%d",
-    
+    .date_format = defaults.date_format,   // FIXME: configurize!
     .show_connection_status = persist_exists(MESSAGE_KEY_ShowConnectionStatus) 
       ? persist_read_bool(MESSAGE_KEY_ShowConnectionStatus)
-      : 1,
+      : defaults.show_connection_status,
     .show_battery_status = persist_exists(MESSAGE_KEY_ShowBatteryStatus) 
       ? persist_read_bool(MESSAGE_KEY_ShowBatteryStatus)
-      : 1
+      : defaults.show_battery_status
   };
-  
-  
-  
-  
-  
-    // Post-processing...
+  /*
+  // Post-processing...
   //   FIXME:  http://stackoverflow.com/questions/17250480/c-declaring-int-array-inside-struct
   if (persist_exists(MESSAGE_KEY_AlertVibePattern)) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "User vibe!");
@@ -115,9 +129,8 @@ void load_config(void) {
     result.alert_vibe_pattern = get_vibe_pattern_by_string("very_long");
     APP_LOG(APP_LOG_LEVEL_DEBUG, "... Using default vibe.");
   }
-  
+  */
   config = result;
-  //return result;
 }
 
 void update_config(DictionaryIterator *iter, void *context) {
@@ -194,6 +207,6 @@ void update_config(DictionaryIterator *iter, void *context) {
     persist_write_bool(MESSAGE_KEY_ShowBatteryStatus, show_battery_status_t->value->int32 == 1);
   }
   
+  // Now, refresh the actual config...
   load_config();
-  //return load_config();
 }

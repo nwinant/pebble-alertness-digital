@@ -4,12 +4,12 @@
         "pebble-clay": "^1.0.2"
     },
     "keywords": [],
-    "name": "timeminder",
+    "name": "alertness-digital",
     "pebble": {
         "capabilities": [
             "configurable"
         ],
-        "displayName": "TimeMinder",
+        "displayName": "Alertness: Digital",
         "enableMultiJS": true,
         "messageKeys": [
             "MainBackgroundColor",

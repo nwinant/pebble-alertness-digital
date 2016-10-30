@@ -212,6 +212,8 @@ void refresh_display_layout(void) {
     text_layer_set_text_color(s_connection_layer, config.comps_fg_color);
     text_layer_set_text_color(s_battery_layer,    config.comps_fg_color);
   } else {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "- AlertBackgroundColor: %" PRIu32, persist_read_int(MESSAGE_KEY_AlertBackgroundColor));
+    
     window_set_background_color(s_main_window, config.alert_bg_color);
     text_layer_set_background_color(s_complications_layer, GColorClear);
     text_layer_set_text_color(s_time_layer,       config.alert_fg_color);
