@@ -4,12 +4,6 @@
 # Feel free to customize this to your needs.
 #
 
-# Load enamel (https://github.com/gregoiresage/enamel)...
-import sys
-sys.path.append('node_modules')
-from enamel.enamel import enamel
-
-# Everything else...
 import os.path
 try:
     from sh import CommandNotFound, jshint, cat, ErrorReturnCode_2
@@ -45,12 +39,7 @@ def build(ctx):
         ctx.set_env(ctx.all_envs[p])
         ctx.set_group(ctx.env.PLATFORM_NAME)
         app_elf = '{}/pebble-app.elf'.format(ctx.env.BUILD_DIR)
-        
-        # Modifies build to include enamel
-        #ctx.pbl_program(source=ctx.path.ant_glob('src/c/**/*.c'), target=app_elf)
-        ctx(rule = enamel, source='src/js/config.json', target=['enamel.c', 'enamel.h'])
-        #ctx.pbl_program(source=ctx.path.ant_glob('src/**/*.c') + ['enamel.c'], target=app_elf)
-        ctx.pbl_program(source=ctx.path.ant_glob('src/c/**/*.c') + ['enamel.c'], target=app_elf)
+        ctx.pbl_program(source=ctx.path.ant_glob('src/c/**/*.c'), target=app_elf)
 
         if build_worker:
             worker_elf = '{}/pebble-worker.elf'.format(ctx.env.BUILD_DIR)
