@@ -131,6 +131,8 @@ void load_config(void) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "... Using default vibe.");
   }
   */
+  result.alert_vibe_pattern = get_vibe_pattern_by_string("very_long"); // FIXME: replace this with actual configuration logic - nwinant, 2016-10-31
+  
   config = result;
 }
 

@@ -1,6 +1,7 @@
 {
     "author": "Nathan Winant",
     "dependencies": {
+        "enamel": "^1.2.4",
         "pebble-clay": "^1.0.2"
     },
     "keywords": [],
