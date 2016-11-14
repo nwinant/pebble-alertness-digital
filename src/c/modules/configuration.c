@@ -3,6 +3,13 @@
 #include "vibe_patterns.h"
 #include "inttypes.h"
 
+/*
+ *  TODO: Ideally, this will be replaced (in whole or in part) with Enamel:
+ *        https://github.com/gregoiresage/enamel   - nwinant, 2016-11-13
+ *
+ */
+
+
 
 /* ====  Variables  ================================================================ */
 
@@ -32,8 +39,7 @@ void load_defaults(void) {
       .alert_start_hour = 9,
       .alert_end_hour = 22,
       //.alert_end_hour = 23,
-      //.date_format = "%a %b %e",
-      //.date_format = "%a %Y-%m-%d",
+      .time_font_name = "time_comfortaa",
       .date_format = "%a %m-%d",
       .show_connection_status = 1,
       .show_battery_status = 1
@@ -43,6 +49,7 @@ void load_defaults(void) {
 
 void load_config(void) {
   load_defaults();
+  
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Loading config");
   Configuration result = {
     // Display
@@ -107,7 +114,6 @@ void load_config(void) {
       ? persist_read_int(MESSAGE_KEY_AlertEndHour)
       : defaults.alert_end_hour,
     // Misc
-    .date_format = defaults.date_format,   // FIXME: configurize!
     .show_connection_status = persist_exists(MESSAGE_KEY_ShowConnectionStatus) 
       ? persist_read_bool(MESSAGE_KEY_ShowConnectionStatus)
       : defaults.show_connection_status,
@@ -115,8 +121,19 @@ void load_config(void) {
       ? persist_read_bool(MESSAGE_KEY_ShowBatteryStatus)
       : defaults.show_battery_status
   };
-  /*
+  
+  // String defaults, configured below in post-processing...
+  strncpy(result.time_font_name, defaults.time_font_name, sizeof(defaults.time_font_name));
+  strncpy(result.date_format,    defaults.date_format,    sizeof(defaults.date_format));
+  
   // Post-processing...
+  if (persist_exists(MESSAGE_KEY_TimeFont)) {
+    persist_read_string(MESSAGE_KEY_TimeFont, result.time_font_name, sizeof(result.time_font_name));
+  }
+  if (persist_exists(MESSAGE_KEY_DateFormat)) {
+    persist_read_string(MESSAGE_KEY_DateFormat, result.date_format, sizeof(result.date_format));
+  }
+  /*
   //   FIXME:  http://stackoverflow.com/questions/17250480/c-declaring-int-array-inside-struct
   if (persist_exists(MESSAGE_KEY_AlertVibePattern)) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "User vibe!");
@@ -199,8 +216,16 @@ void update_config(DictionaryIterator *iter, void *context) {
                       atoi(alert_end_hour_t->value->cstring));
     APP_LOG(APP_LOG_LEVEL_DEBUG, "- AlertEndHour: %" PRIu32, persist_read_int(MESSAGE_KEY_AlertEndHour));
   }
+  Tuple *time_font_name_t = dict_find(iter, MESSAGE_KEY_TimeFont);
+  if (time_font_name_t) {
+    persist_write_string(MESSAGE_KEY_TimeFont, time_font_name_t->value->cstring);
+  }
   
   // Misc
+  Tuple *date_format_t = dict_find(iter, MESSAGE_KEY_DateFormat);
+  if (date_format_t) {
+    persist_write_string(MESSAGE_KEY_DateFormat, date_format_t->value->cstring);
+  }
   Tuple *show_connection_status_t = dict_find(iter, MESSAGE_KEY_ShowConnectionStatus);
   if (show_connection_status_t) {
     persist_write_bool(MESSAGE_KEY_ShowConnectionStatus, show_connection_status_t->value->int32 == 1);

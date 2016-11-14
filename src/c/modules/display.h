@@ -4,6 +4,8 @@
 
 void init_display(Window *new_s_main_window);
 
+void update_display_config(void);
+
 void refresh_display_layout(void);
 
 void refresh_display_data(struct tm *tick_time);

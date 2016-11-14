@@ -35,6 +35,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 static void config_update_handler(DictionaryIterator *iter, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "New config incoming...");
   update_config(iter, context);
+  update_display_config();
   update_time();  // Refresh watch with changes
 }
 
@@ -58,7 +59,13 @@ static void register_handlers(void) {
   // Configuration
   //APP_LOG(APP_LOG_LEVEL_DEBUG, "Registering config handler...");
   app_message_register_inbox_received(config_update_handler);
-  app_message_open(128, 128);
+  
+  // TODO: what are the ideal values?
+  app_message_open(256, 256);
+  //app_message_open(128, 128);
+  //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  // Max size consumes 8200 bytes of heap memory (PTS), potentially more in the future!
+  
   // Ticks
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
   // Battery & bluetooth
@@ -90,6 +97,7 @@ static void init() {
 
 static void deinit() {
   deregister_handlers();
+  vibes_cancel();
   window_destroy(s_main_window);
 }
 

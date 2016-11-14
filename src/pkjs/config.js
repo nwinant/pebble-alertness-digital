@@ -85,7 +85,7 @@ module.exports = [
       {
         "type": "color",
         "messageKey": "ComplicationsForegroundColor",
-        "defaultValue": "000000",
+        "defaultValue": "ffffff",
         "label": "Text Color"
       },
       
@@ -110,11 +110,41 @@ module.exports = [
         "messageKey": "AlertForegroundColor",
         "defaultValue": "ffffff",
         "label": "Text Color"
+      },
+      
+      
+      {
+        "type"        : "heading",
+        "defaultValue": "Fonts"
+      },
+      {
+        "type"        : "select",
+        "messageKey"  : "TimeFont",
+        "label"       : "Time Font",
+        "defaultValue": "time_comfortaa",
+        "options": [
+          {
+            "label": "Comfortaa",
+            "value": "time_comfortaa"
+          },
+          {
+            "label": "Dinen",
+            "value": "time_dinen"
+          },
+          {
+            "label": "Bitham",
+            "value": "time_bitham"
+          },
+          {
+            "label": "Roboto",
+            "value": "time_roboto"
+          }
+        ]
       }
     ]
   },
-  
-  
+    
+    
   {
     "type": "submit",
     "defaultValue": "Save All Settings"
@@ -185,7 +215,7 @@ module.exports = [
           },
           {
             "label": "Short",
-            "value": "short",
+            "value": "short"
           }
         ]
       },
@@ -416,6 +446,36 @@ module.exports = [
         "type": "heading",
         "defaultValue": "Miscellaneous"
       },
+      
+      
+      
+      {
+        "type"        : "select",
+        "messageKey"  : "DateFormat",
+        "label"       : "Date Format",
+        "defaultValue": "%a %m-%d",
+        "options": [
+          {
+            "label": "Mon 01-23",
+            "value": "%a %m-%d"
+          },
+          {
+            "label": "Mon 01/23",
+            "value": "%a %m/%d"
+          },
+          {
+            "label": "Mon Jan 9",
+            "value": "%a %b %e"
+          },
+          {
+            "label": "2017-01-23",
+            "value": "%Y-%m-%d"
+          }
+        ]
+      },
+      
+      
+      
       {
         "type": "toggle",
         "messageKey": "ShowConnectionStatus",

@@ -1,16 +1,15 @@
 {
     "author": "Nathan Winant",
     "dependencies": {
-        "enamel": "^1.2.4",
         "pebble-clay": "^1.0.2"
     },
     "keywords": [],
-    "name": "alertness-digital",
+    "name": "digital-alertness",
     "pebble": {
         "capabilities": [
             "configurable"
         ],
-        "displayName": "Alertness: Digital",
+        "displayName": "Digital Alertness",
         "enableMultiJS": true,
         "messageKeys": [
             "MainBackgroundColor",
@@ -27,14 +26,24 @@
             "ShowConnectionStatus",
             "ShowBatteryStatus",
             "EnableFlip",
-            "LastAlertTickTime"
+            "LastAlertTickTime",
+            "TimeFont",
+            "DateFormat"
         ],
         "projectType": "native",
         "resources": {
             "media": [
                 {
-                    "file": "fonts/DINEN_.TTF",
-                    "name": "FONT_DINEN_62",
+                    "characterRegex": "[0-9:. ]",
+                    "file": "fonts/lg_DINEN.TTF",
+                    "name": "FONT_DINEN_SUBSET_62",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[0-9:. ]",
+                    "file": "fonts/lg_Comfortaa-Bold.ttf",
+                    "name": "FONT_COMFORTAA_BOLD_SUBSET_62",
                     "targetPlatforms": null,
                     "type": "font"
                 }

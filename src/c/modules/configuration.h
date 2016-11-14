@@ -4,6 +4,8 @@
 
 /* ====  Structs  ================================================================== */
 
+#define DEFAULT_CONFIG_BUFF_MAX_LEN 32
+
 typedef struct Configuration {
   bool        invert_layout;
   GColor      main_bg_color;
@@ -16,7 +18,8 @@ typedef struct Configuration {
   uint8_t     alert_frequency_mins;
   uint8_t     alert_start_hour;
   uint8_t     alert_end_hour;
-  char        *date_format;
+  char        time_font_name[DEFAULT_CONFIG_BUFF_MAX_LEN];
+  char        date_format[DEFAULT_CONFIG_BUFF_MAX_LEN];
   bool        show_connection_status;
   bool        show_battery_status;
   VibePattern alert_vibe_pattern;
