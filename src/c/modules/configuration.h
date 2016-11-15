@@ -18,8 +18,11 @@ typedef struct Configuration {
   uint8_t     alert_frequency_mins;
   uint8_t     alert_start_hour;
   uint8_t     alert_end_hour;
-  char        time_font_name[DEFAULT_CONFIG_BUFF_MAX_LEN];
-  char        date_format[DEFAULT_CONFIG_BUFF_MAX_LEN];
+  char        time_font_name     [DEFAULT_CONFIG_BUFF_MAX_LEN];
+  char        date_font_name     [DEFAULT_CONFIG_BUFF_MAX_LEN];
+  char        countdown_font_name[DEFAULT_CONFIG_BUFF_MAX_LEN];
+  char        details_font_name  [DEFAULT_CONFIG_BUFF_MAX_LEN];
+  char        date_format        [DEFAULT_CONFIG_BUFF_MAX_LEN];
   bool        show_connection_status;
   bool        show_battery_status;
   VibePattern alert_vibe_pattern;

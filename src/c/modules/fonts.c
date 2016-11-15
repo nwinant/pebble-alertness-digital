@@ -19,39 +19,23 @@ typedef struct SystemFontStruct {
   char        *font_key;
 } SystemFontStruct;
 
-//const char * font_key
-
 /*
 http://www.dafont.com/comfortaa.font
 */
-
-/*
-  //s_time_font       = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
-  //s_time_font       = fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49);
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_62));
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_SUBSET_62));
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_COMFORTAA_BOLD_SUBSET_62));
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(config.time_font_resource_id));
-  
-  //s_date_font       = FONT_KEY_GOTHIC_24_BOLD);
-  s_date_font       = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
-  //s_countdown_font  = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
-  //s_countdown_font  = fonts_get_system_font(FONT_KEY_GOTHIC_28);
-  s_countdown_font  = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
-  s_connection_font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-  s_battery_font    = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-  */
-
 static CustomFontStruct custom_font[2] = {
-  {"time_comfortaa",      RESOURCE_ID_FONT_COMFORTAA_BOLD_SUBSET_62, NULL},
-  {"time_dinen",          RESOURCE_ID_FONT_DINEN_SUBSET_62,          NULL}
+  {"time_comfortaa",        RESOURCE_ID_FONT_COMFORTAA_BOLD_SUBSET_62, NULL},
+  {"time_dinen",            RESOURCE_ID_FONT_DINEN_SUBSET_62,          NULL}
 };
 
-static SystemFontStruct system_font[4] = {
-  {"time_bitham",         FONT_KEY_BITHAM_42_BOLD},
-  {"time_roboto",         FONT_KEY_ROBOTO_BOLD_SUBSET_49},
-  {"date_gothic_bold_lg", FONT_KEY_GOTHIC_28_BOLD},
-  {"date_gothic_bold_md", FONT_KEY_GOTHIC_24_BOLD}
+static SystemFontStruct system_font[5] = {
+  {"time_bitham",           FONT_KEY_BITHAM_42_BOLD},
+  {"time_roboto",           FONT_KEY_ROBOTO_BOLD_SUBSET_49},
+  {"date_gothic",           FONT_KEY_GOTHIC_28_BOLD},
+  //{"date_gothic_med",     FONT_KEY_GOTHIC_24_BOLD},
+  //{"countdown_bitham",    FONT_KEY_BITHAM_30_BLACK},
+  //{"countdown_gothic_lg", FONT_KEY_GOTHIC_28},
+  {"countdown_gothic",      FONT_KEY_GOTHIC_24_BOLD},
+  {"details_gothic",        FONT_KEY_GOTHIC_18_BOLD}
 };
 
 
@@ -105,13 +89,16 @@ SystemFontStruct *get_system_font_struct_by_name(char *font_name) {
 /* ====  Public functions  ========================================================= */
 
 GFont get_font_by_name(char *font_name) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Trying to get font: '%s'", font_name);
   CustomFontStruct *cust_font = get_custom_font_struct_by_name(font_name);
   if (cust_font != NULL) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Retrieving custom font: '%s'", font_name);
     possibly_load_custom_font_struct(cust_font);
     return cust_font->instance;
   }
   SystemFontStruct *sys_font = get_system_font_struct_by_name(font_name);
   if (sys_font != NULL) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Retrieving system font: '%s'", font_name);
     return fonts_get_system_font(sys_font->font_key);
   }
   return NULL;

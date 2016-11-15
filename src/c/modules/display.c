@@ -21,12 +21,6 @@ static TextLayer *s_countdown_layer;
 static TextLayer *s_connection_layer;
 static TextLayer *s_battery_layer;
 
-//static GFont s_time_font;
-static GFont s_date_font;
-static GFont s_countdown_font;
-static GFont s_connection_font;
-static GFont s_battery_font;
-
 struct TextLayer *get_connection_layer(void) {
   return s_connection_layer;
 }
@@ -38,19 +32,19 @@ struct TextLayer *get_battery_layer(void) {
 
 /* ====  Create / Destroy  ========================================================= */
 
-static void configure_text_layer(TextLayer *text_layer, GTextAlignment alignment, GColor color, TextLayer * parent_text_layer) {
+static void configure_text_layer(TextLayer *text_layer, GTextAlignment alignment, GColor bgcolor, TextLayer * parent_text_layer) {
   text_layer_set_text_alignment(text_layer, alignment);
   layer_add_child(text_layer_get_layer(parent_text_layer), text_layer_get_layer(text_layer));
-  text_layer_set_background_color(text_layer, color);
+  text_layer_set_background_color(text_layer, bgcolor);
 }
 
 void update_display_config(void) {
   unload_all_fonts();
-  text_layer_set_font(s_time_layer,       get_font_by_name(config.time_font_name));  
-  text_layer_set_font(s_date_layer,       s_date_font);
-  text_layer_set_font(s_countdown_layer,  s_countdown_font);
-  text_layer_set_font(s_connection_layer, s_connection_font);
-  text_layer_set_font(s_battery_layer,    s_battery_font);
+  text_layer_set_font(s_time_layer,       get_font_by_name(config.time_font_name));
+  text_layer_set_font(s_date_layer,       get_font_by_name(config.date_font_name));
+  text_layer_set_font(s_countdown_layer,  get_font_by_name(config.countdown_font_name));
+  text_layer_set_font(s_connection_layer, get_font_by_name(config.details_font_name));
+  text_layer_set_font(s_battery_layer,    get_font_by_name(config.details_font_name));
 }
 
 static void main_window_load(Window *window) {  
@@ -70,7 +64,8 @@ static void main_window_load(Window *window) {
   
   // Calculate layout
   primary_bounds.size.h      = (bounds.size.h / 2) + (time_layer_size_y / 2);
-  comp_bounds.size.h         = bounds.size.h - primary_bounds.size.h;
+  //comp_bounds.size.h         = bounds.size.h - primary_bounds.size.h;
+  comp_bounds.size.h         = bounds.size.h - primary_bounds.size.h + PBL_IF_ROUND_ELSE(10,0); // Includes fudge factor
   //date_bounds.size.h         = 28;
   date_bounds.size.h         = 32;
   //countdown_bounds.size.h    = PBL_IF_ROUND_ELSE(38, 33);
@@ -88,8 +83,10 @@ static void main_window_load(Window *window) {
     time_bounds.origin.y       = (primary_bounds.size.h / 2) - (time_layer_size_y / 2) + time_bounds_origin_y_offset; // Includes fudge factor to tweak layout
     date_bounds.origin.y       = comp_bounds.size.h - date_bounds.size.h;
     countdown_bounds.origin.y  = 0;
-    connection_bounds.origin.y = 0;
-    battery_bounds.origin.y    = 0;
+    //connection_bounds.origin.y = 0;
+    //battery_bounds.origin.y    = 0;
+    connection_bounds.origin.y = PBL_IF_ROUND_ELSE(comp_bounds.size.h - connection_bounds.size.h, 0);
+    battery_bounds.origin.y    = PBL_IF_ROUND_ELSE(comp_bounds.size.h - battery_bounds.size.h, 0);
   } else {
     primary_bounds.origin.y    = 0;
     comp_bounds.origin.y       = primary_bounds.size.h;
@@ -142,37 +139,8 @@ static void main_window_load(Window *window) {
   configure_text_layer(s_connection_layer, GTextAlignmentLeft,   GColorClear, s_complications_layer);
   configure_text_layer(s_battery_layer,    GTextAlignmentRight,  GColorClear, s_complications_layer);
   
-  // Constant colors
-  //text_layer_set_background_color(s_primary_layer,    GColorClear);
-  //text_layer_set_background_color(s_time_layer,       GColorClear);
-  //text_layer_set_background_color(s_date_layer,       GColorClear);
-  //text_layer_set_background_color(s_countdown_layer,  GColorClear);
-  //text_layer_set_background_color(s_connection_layer, GColorClear);
-  //text_layer_set_background_color(s_battery_layer,    GColorClear);
-  
   // Things which may change on future config updates
   update_display_config();
-}
-
-void load_fonts(void) {
-  /*
-  http://www.dafont.com/comfortaa.font
-  */
-  
-  //s_time_font       = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
-  //s_time_font       = fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49);
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_62));
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_SUBSET_62));
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_COMFORTAA_BOLD_SUBSET_62));
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(config.time_font_resource_id));
-  
-  //s_date_font       = FONT_KEY_GOTHIC_24_BOLD);
-  s_date_font       = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
-  //s_countdown_font  = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
-  //s_countdown_font  = fonts_get_system_font(FONT_KEY_GOTHIC_28);
-  s_countdown_font  = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
-  s_connection_font = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-  s_battery_font    = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);  
 }
 
 static void main_window_unload(Window *window) {
@@ -188,7 +156,6 @@ static void main_window_unload(Window *window) {
 
 void init_display(Window *new_s_main_window) {
   s_main_window = new_s_main_window;
-  load_fonts();
   window_set_window_handlers(s_main_window, (WindowHandlers) {
     .load = main_window_load,
     .unload = main_window_unload

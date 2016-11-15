@@ -9,8 +9,6 @@
  *
  */
 
-
-
 /* ====  Variables  ================================================================ */
 
 static bool initialized = false;
@@ -25,24 +23,24 @@ void load_defaults(void) {
     initialized = true;
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Loading defaults");
     defaults = (Configuration) {
-      .main_bg_color = GColorBlack,
-      .main_fg_color = GColorWhite,
-      .comps_bg_color = PBL_IF_COLOR_ELSE(GColorRed, GColorWhite),
-      .comps_fg_color = PBL_IF_COLOR_ELSE(GColorWhite, GColorBlack),
-      //.comps_fg_color = GColorBlack,
-      .alert_bg_color = PBL_IF_COLOR_ELSE(GColorFromHEX(0x550000), GColorWhite),
-      .alert_fg_color = PBL_IF_COLOR_ELSE(GColorWhite, GColorBlack),
-      .invert_layout = 0,
-      .alerts_enabled = 1,
-      .alert_frequency_mins = 15,
-      //.alert_frequency_mins = 1,
-      .alert_start_hour = 9,
-      .alert_end_hour = 22,
-      //.alert_end_hour = 23,
-      .time_font_name = "time_comfortaa",
-      .date_format = "%a %m-%d",
+      .main_bg_color          = GColorBlack,
+      .main_fg_color          = GColorWhite,
+      .comps_bg_color         = PBL_IF_COLOR_ELSE(GColorRed, GColorWhite),
+      .comps_fg_color         = PBL_IF_COLOR_ELSE(GColorWhite, GColorBlack),
+      .alert_bg_color         = PBL_IF_COLOR_ELSE(GColorFromHEX(0x550000), GColorWhite),
+      .alert_fg_color         = PBL_IF_COLOR_ELSE(GColorWhite, GColorBlack),
+      .invert_layout          = 0,
+      .alerts_enabled         = 1,
+      .alert_frequency_mins   = 15,
+      .alert_start_hour       = 9,
+      .alert_end_hour         = 22,
       .show_connection_status = 1,
-      .show_battery_status = 1
+      .show_battery_status    = 1,
+      .time_font_name         = "time_comfortaa",
+      .date_font_name         = "date_gothic",
+      .countdown_font_name    = "countdown_gothic",
+      .details_font_name      = "details_gothic",
+      .date_format            = "%a %m-%d"
     };
   }
 }
@@ -123,8 +121,11 @@ void load_config(void) {
   };
   
   // String defaults, configured below in post-processing...
-  strncpy(result.time_font_name, defaults.time_font_name, sizeof(defaults.time_font_name));
-  strncpy(result.date_format,    defaults.date_format,    sizeof(defaults.date_format));
+  strncpy(result.time_font_name,      defaults.time_font_name,      sizeof(defaults.time_font_name));
+  strncpy(result.date_font_name,      defaults.date_font_name,      sizeof(defaults.date_font_name));
+  strncpy(result.countdown_font_name, defaults.countdown_font_name, sizeof(defaults.countdown_font_name));
+  strncpy(result.details_font_name,   defaults.details_font_name,   sizeof(defaults.details_font_name));
+  strncpy(result.date_format,         defaults.date_format,         sizeof(defaults.date_format));
   
   // Post-processing...
   if (persist_exists(MESSAGE_KEY_TimeFont)) {
