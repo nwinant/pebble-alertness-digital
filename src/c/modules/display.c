@@ -13,6 +13,9 @@
 /* ====  Variables  ================================================================ */
 
 static Window    *s_main_window;
+static GRect     bounds;
+static GPoint    center;
+static int       radius;
 static TextLayer *s_primary_layer;
 static TextLayer *s_complications_layer;
 static TextLayer *s_time_layer;
@@ -47,13 +50,28 @@ void update_display_config(void) {
   text_layer_set_font(s_battery_layer,    get_font_by_name(config.details_font_name));
 }
 
-static void main_window_load(Window *window) {  
+static GPoint calc_round_point(int32_t angle) {
+  GPoint result = {
+    .x = (sin_lookup(angle)  * radius / TRIG_MAX_RATIO) + center.x,
+    .y = (-cos_lookup(angle) * radius / TRIG_MAX_RATIO) + center.y
+  };
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "~ ~ ~ THINGY: %d %d", result.x, result.y);
+  return result;
+}
+
+static void main_window_load(Window *window) {
   // Prepare to calculate layout
-  //uint32_t time_layer_size_y = 62;  
+  //uint32_t time_layer_size_y = 62;
   uint32_t time_layer_size_y = 60;
-  int32_t time_bounds_origin_y_offset = -10;  
+  int32_t time_bounds_origin_y_offset = -10;
   Layer *window_layer        = window_get_root_layer(window);
-  GRect bounds               = layer_get_bounds(window_layer);
+  bounds                     = layer_get_bounds(window_layer);
+  bool is_tall               = bounds.size.h > 168;
+  center = (GPoint) {
+    .x = bounds.size.w / 2,
+    .y = bounds.size.h / 2
+  };
+  radius = center.y;
   GRect primary_bounds       = bounds;
   GRect comp_bounds          = bounds;
   GRect time_bounds          = primary_bounds;
@@ -62,40 +80,63 @@ static void main_window_load(Window *window) {
   GRect connection_bounds    = comp_bounds;
   GRect battery_bounds       = comp_bounds;
   
-  // Calculate layout
+  // Calculate layout...
+  
   primary_bounds.size.h      = (bounds.size.h / 2) + (time_layer_size_y / 2);
+  primary_bounds.origin.y    = bounds.size.h - primary_bounds.size.h;
+  time_bounds.origin.y       = (primary_bounds.size.h / 2) - (time_layer_size_y / 2) + time_bounds_origin_y_offset; // Includes fudge factor to tweak layout
   //comp_bounds.size.h         = bounds.size.h - primary_bounds.size.h;
-  comp_bounds.size.h         = bounds.size.h - primary_bounds.size.h + PBL_IF_ROUND_ELSE(10,0); // Includes fudge factor
+  //comp_bounds.size.h         = bounds.size.h - primary_bounds.size.h + PBL_IF_ROUND_ELSE(15,0); // Includes fudge factor
+  comp_bounds.size.h         = bounds.size.h - primary_bounds.size.h + ((is_tall) ? 15 : 0); // Includes fudge factor
+  //comp_bounds.size.h         = (is_tall) ? bounds.size.h / 2 - 15 : bounds.size.h - primary_bounds.size.h;
+  comp_bounds.origin.y       = 0;
   //date_bounds.size.h         = 28;
   date_bounds.size.h         = 32;
+  date_bounds.origin.y       = comp_bounds.size.h - date_bounds.size.h;
+  countdown_bounds.size.w    = 30;
+  countdown_bounds.size.h    = 25;
+  countdown_bounds.origin.x  = center.x - (countdown_bounds.size.w / 2);
+  countdown_bounds.origin.y  = 0;
   //countdown_bounds.size.h    = PBL_IF_ROUND_ELSE(38, 33);
   //countdown_bounds.size.h    = PBL_IF_ROUND_ELSE(36, 31);
-  countdown_bounds.size.h    = PBL_IF_ROUND_ELSE(32, 27);
-  connection_bounds.size.w   = connection_bounds.size.w - 10;
-  connection_bounds.size.h   = PBL_IF_ROUND_ELSE(23, 20);
+  //countdown_bounds.size.h    = 27;
+  //connection_bounds.size.w   = connection_bounds.size.w - 10;
+  connection_bounds.size.w   = 30;
+  connection_bounds.size.h   = 20;
   connection_bounds.origin.x = 5;
-  battery_bounds.size.w      = battery_bounds.size.w - 10;
-  battery_bounds.size.h      = PBL_IF_ROUND_ELSE(23, 20);
-  battery_bounds.origin.x    = 5;
-  if (!config.invert_layout) {
-    comp_bounds.origin.y       = 0;
-    primary_bounds.origin.y    = bounds.size.h - primary_bounds.size.h;
-    time_bounds.origin.y       = (primary_bounds.size.h / 2) - (time_layer_size_y / 2) + time_bounds_origin_y_offset; // Includes fudge factor to tweak layout
-    date_bounds.origin.y       = comp_bounds.size.h - date_bounds.size.h;
-    countdown_bounds.origin.y  = 0;
-    //connection_bounds.origin.y = 0;
-    //battery_bounds.origin.y    = 0;
-    connection_bounds.origin.y = PBL_IF_ROUND_ELSE(comp_bounds.size.h - connection_bounds.size.h, 0);
-    battery_bounds.origin.y    = PBL_IF_ROUND_ELSE(comp_bounds.size.h - battery_bounds.size.h, 0);
-  } else {
-    primary_bounds.origin.y    = 0;
-    comp_bounds.origin.y       = primary_bounds.size.h;
-    time_bounds.origin.y       = primary_bounds.size.h - time_layer_size_y;
-    date_bounds.origin.y       = 0;
-    countdown_bounds.origin.y  = comp_bounds.size.h - countdown_bounds.size.h;
-    connection_bounds.origin.y = comp_bounds.size.h - connection_bounds.size.h;
-    battery_bounds.origin.y    = comp_bounds.size.h - battery_bounds.size.h;
-  }
+  connection_bounds.origin.y = 0;
+  battery_bounds.size.w      = 50;
+  //battery_bounds.size.w      = battery_bounds.size.w - 10;
+  battery_bounds.size.h      = 20;
+  battery_bounds.origin.x    = primary_bounds.size.w - (battery_bounds.size.w + 5);
+  battery_bounds.origin.y    = 0;
+  
+  #if defined(PBL_ROUND)
+    //printf("This is a round display!");
+    //int32_t min_width = connection_bounds.size.w + connection_bounds.size.w + battery_bounds.size.w;
+    //printf("Min width: %d", min_width);
+    //int32_t min_width = 100;
+    //int32_t min_width = 25;
+    // TODO: dynamically calculate optimal angle / width / placement for complications - 2016-1118
+    int32_t angle = TRIG_MAX_ANGLE / 10;
+    GPoint round_upper_left_point  = calc_round_point(TRIG_MAX_ANGLE - angle);
+    GPoint round_upper_right_point = calc_round_point(angle);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "left:  %d %d", round_upper_left_point.x,  round_upper_left_point.y);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "right: %d %d", round_upper_right_point.x, round_upper_right_point.y);
+    printf("DISTANCE %d", round_upper_right_point.x - round_upper_left_point.x);
+    
+    //countdown_bounds.size.h    = 32;
+    countdown_bounds.origin.y  = round_upper_right_point.y - countdown_bounds.size.h + battery_bounds.size.h;
+    //connection_bounds.size.w   = connection_bounds.size.w - 10;
+    //connection_bounds.size.h   = 23;
+    connection_bounds.origin.x = round_upper_left_point.x;
+    connection_bounds.origin.y = round_upper_right_point.y;
+    //battery_bounds.size.w      = round_upper_right_point.x;
+    //battery_bounds.size.h      = 23;
+    battery_bounds.origin.y    = round_upper_right_point.y;
+    battery_bounds.origin.x    = round_upper_right_point.x - (battery_bounds.size.w);
+  #endif
+  
   if (DEV_EXCESSIVE_LOGGING) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Calculated bounds...");
     APP_LOG(APP_LOG_LEVEL_DEBUG, "- Window y:        %d", bounds.origin.y);
