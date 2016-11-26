@@ -256,5 +256,6 @@ void refresh_display_data(struct tm *tick_time) {
       snprintf(countdown_buffer, sizeof(countdown_buffer), " ");
     }
     text_layer_set_text(s_countdown_layer, countdown_buffer);
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Is quiet time active?: %i", quiet_time_is_active());
   }
 }

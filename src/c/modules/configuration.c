@@ -16,7 +16,7 @@ static Configuration defaults;
 Configuration config;
 
 
-/* ====  Functions  ================================================================ */
+/* ====  Private functions  ========================================================= */
 
 void load_defaults(void) {
   if (!initialized) {
@@ -31,10 +31,13 @@ void load_defaults(void) {
       .alert_fg_color         = PBL_IF_COLOR_ELSE(GColorWhite, GColorBlack),
       .invert_layout          = 0,
       .alerts_enabled         = 1,
+      .alerts_use_quiet_time  = true,
+      .alert_vibe_name        = "one_sec",
       .alert_frequency_mins   = 15,
+      //.alert_frequency_mins   = 1,
       //.alert_start_hour       = 9,
       .alert_start_hour       = 0,
-//      .alert_end_hour         = 22,
+      //.alert_end_hour         = 22,
       .alert_end_hour         = 24,
       .show_connection_status = 1,
       .show_battery_status    = 1,
@@ -46,6 +49,9 @@ void load_defaults(void) {
     };
   }
 }
+
+
+/* ====  Pulic functions  =========================================================== */
 
 void load_config(void) {
   load_defaults();
@@ -74,45 +80,25 @@ void load_config(void) {
     .invert_layout = persist_exists(MESSAGE_KEY_EnableFlip) 
       ? persist_read_bool(MESSAGE_KEY_EnableFlip)
       : defaults.invert_layout,
+    
     // Alerts
+    .alerts_use_quiet_time = defaults.alerts_use_quiet_time, // FIXME: make config-driven
     .alerts_enabled = persist_exists(MESSAGE_KEY_AlertsEnabled) 
       ? persist_read_bool(MESSAGE_KEY_AlertsEnabled)
       : defaults.alerts_enabled,
+    
+//    .vibe_alert_name  // FIXME: make configurable!
+    
     .alert_frequency_mins = persist_exists(MESSAGE_KEY_AlertFrequency) 
       ? persist_read_int(MESSAGE_KEY_AlertFrequency)
       : defaults.alert_frequency_mins,
-    //.alert_vibe_pattern = vibe_pattern,
-    /*
-    // FIXME: configure!
-    uint32_t *alert_segments;
-    if (persist_exists(MESSAGE_KEY_AlertVibePattern)) {
-      char buffer[32];
-      persist_read_string(MESSAGE_KEY_AlertVibePattern, buffer, sizeof(buffer));
-      alert_segments = get_vibe_pattern_by_string(buffer);
-    } else {
-      alert_segments = get_vibe_pattern_by_string("very_long");
-    }
-    //uint32_t *alert_segments = get_vibe_pattern_by_string("short");
-    */
-    /*
-    .alert_vibe_pattern = (VibePattern) {
-      .durations = alert_segments,
-      .num_segments = ARRAY_LENGTH(alert_segments)
-    },
-    */
-    /*
-    // FIXME: !!!!!!
-    .alert_vibe_pattern = (VibePattern) {
-      .durations = alert_segments_very_long,
-      .num_segments = ARRAY_LENGTH(alert_segments_very_long)
-    },
-    */
     .alert_start_hour = persist_exists(MESSAGE_KEY_AlertStartHour) 
       ? persist_read_int(MESSAGE_KEY_AlertStartHour)
       : defaults.alert_start_hour,
     .alert_end_hour = persist_exists(MESSAGE_KEY_AlertEndHour) 
       ? persist_read_int(MESSAGE_KEY_AlertEndHour)
       : defaults.alert_end_hour,
+    
     // Misc
     .show_connection_status = persist_exists(MESSAGE_KEY_ShowConnectionStatus) 
       ? persist_read_bool(MESSAGE_KEY_ShowConnectionStatus)
@@ -123,6 +109,7 @@ void load_config(void) {
   };
   
   // String defaults, configured below in post-processing...
+  strncpy(result.alert_vibe_name,     defaults.alert_vibe_name,     sizeof(defaults.alert_vibe_name));
   strncpy(result.time_font_name,      defaults.time_font_name,      sizeof(defaults.time_font_name));
   strncpy(result.date_font_name,      defaults.date_font_name,      sizeof(defaults.date_font_name));
   strncpy(result.countdown_font_name, defaults.countdown_font_name, sizeof(defaults.countdown_font_name));
@@ -135,24 +122,7 @@ void load_config(void) {
   }
   if (persist_exists(MESSAGE_KEY_DateFormat)) {
     persist_read_string(MESSAGE_KEY_DateFormat, result.date_format, sizeof(result.date_format));
-  }
-  /*
-  //   FIXME:  http://stackoverflow.com/questions/17250480/c-declaring-int-array-inside-struct
-  if (persist_exists(MESSAGE_KEY_AlertVibePattern)) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "User vibe!");
-    char buffer[32];
-    persist_read_string(MESSAGE_KEY_AlertVibePattern, buffer, sizeof(buffer));
-    result.alert_vibe_pattern = get_vibe_pattern_by_string(buffer);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "... Received user vibe: %s", buffer);
-  } else {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "Default vibe!");
-    //result.alert_vibe_pattern = get_vibe_pattern_by_string("short");
-    result.alert_vibe_pattern = get_vibe_pattern_by_string("very_long");
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "... Using default vibe.");
-  }
-  */
-  result.alert_vibe_pattern = get_vibe_pattern_by_string("very_long"); // FIXME: replace this with actual configuration logic - nwinant, 2016-10-31
-  
+  }  
   config = result;
 }
 
@@ -189,10 +159,12 @@ void update_config(DictionaryIterator *iter, void *context) {
   }
   
   // Alert prefs
+//  alerts_use_quiet_time
   Tuple *alerts_enabled_t = dict_find(iter, MESSAGE_KEY_AlertsEnabled);
   if (alerts_enabled_t) {
     persist_write_bool(MESSAGE_KEY_AlertsEnabled, alerts_enabled_t->value->int32 == 1);
   }
+//  vibe_alert_name
   Tuple *alert_frequency_mins_t = dict_find(iter, MESSAGE_KEY_AlertFrequency);
   if (alert_frequency_mins_t) {
     // FIXME: needs more rigorous error-checking...

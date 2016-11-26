@@ -15,6 +15,8 @@ typedef struct Configuration {
   GColor      alert_bg_color;
   GColor      alert_fg_color;
   bool        alerts_enabled;
+  bool        alerts_use_quiet_time;
+  char        alert_vibe_name    [DEFAULT_CONFIG_BUFF_MAX_LEN];
   uint8_t     alert_frequency_mins;
   uint8_t     alert_start_hour;
   uint8_t     alert_end_hour;
@@ -25,7 +27,7 @@ typedef struct Configuration {
   char        date_format        [DEFAULT_CONFIG_BUFF_MAX_LEN];
   bool        show_connection_status;
   bool        show_battery_status;
-  VibePattern alert_vibe_pattern;
+  //VibePattern alert_vibe_pattern;
 } Configuration;
 
 

@@ -18,8 +18,13 @@ static uint8_t  alert_interval_remainder;
 static int32_t  curr_time;
 static int32_t  last_alert_time;
 
+bool is_quiet_time_in_effect(void) {
+  return config.alerts_use_quiet_time && quiet_time_is_active();
+}
+
 bool is_alert_timer_running(void) {
-  return alert_timer_running;
+  
+  return alert_timer_running && !is_quiet_time_in_effect();
 }
 
 uint8_t get_alert_interval_remainder(void) {
@@ -27,15 +32,28 @@ uint8_t get_alert_interval_remainder(void) {
 }
 
 bool is_alert_potentially_active(void) {
-  return config.alerts_enabled && is_alert_timer_running() && (get_alert_interval_remainder() == 0);
+  return config.alerts_enabled
+    && is_alert_timer_running() 
+    && (get_alert_interval_remainder() == 0)
+    && !is_quiet_time_in_effect();
 }
 
 bool is_alert_currently_active(void) {
-  return is_alert_potentially_active() && ((curr_time != last_alert_time) || DEV_ALERT_AMNESIA);
+  return is_alert_potentially_active()
+    && ((curr_time != last_alert_time) || DEV_ALERT_AMNESIA);
 }
 
 
 /* ====  The meat  ================================================================= */
+
+void do_alert_vibe(char *name, bool persist) {
+  int repeats = persist ? 30 : 1;
+  VibePattern pattern = get_vibe_pattern_by_name(name);
+  for (int i = 0; i < repeats; i++) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Queue alert: %i", i);
+    vibes_enqueue_custom_pattern(pattern);
+  }
+}
 
 void update_alert_handler(struct tm *tick_time) {
   uint8_t curr_hour        = tick_time->tm_hour;
@@ -49,7 +67,7 @@ void update_alert_handler(struct tm *tick_time) {
     ((curr_hour < config.alert_end_hour)
      || ((curr_hour = config.alert_end_hour)
          && (curr_min == 0)));
-  
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Is quiet time in effect? %i", is_quiet_time_in_effect());
   if (is_alert_potentially_active()) {
     vibes_cancel();
     curr_time       = (tick_time->tm_hour * 10000) + (tick_time->tm_min * 100);
@@ -61,7 +79,7 @@ void update_alert_handler(struct tm *tick_time) {
     if  (is_alert_currently_active()) {
       persist_write_int(MESSAGE_KEY_LastAlertTickTime, curr_time);
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Alert: %" PRIi32, curr_time);
-      vibes_enqueue_custom_pattern(config.alert_vibe_pattern);
+      do_alert_vibe(config.alert_vibe_name, true);
     }
   }
 }

@@ -2,39 +2,15 @@
 #include "vibe_patterns.h"
 
 
-// CONST
-
-
-
-// Structs
-
-
-
-// Constants
-
 /*
 static const uint32_t alert_segments1[] = { 200, 100, 200, 500,
                                     1000, 500,
                                     200, 100, 200 };
-*/
-/*
 static const uint32_t alert_segments_long[] = { 100, 200, 100, 400,
                                     800, 400,
                                     100, 200, 100, 400,
                                     800, 400,
                                     100, 200, 100 };
-*/
-/*
-static const uint32_t alert_segments_extended[] = { 100, 200, 100, 400,
-                                    800, 200,
-                                    200, 200,
-                                    800, 200,
-                                    200, 200,
-                                    //800, 200,
-                                    800, 400,
-                                    100, 200, 100 };
-                                    
-static uint32_t alert_segments_short[] = { 400, 200 };
 static uint32_t alert_segments_very_long[] ={ 100, 200, 100, 400,
                                                  500, 200, 500, 200,
                                     200, 100, 200, 100,
@@ -42,10 +18,15 @@ static uint32_t alert_segments_very_long[] ={ 100, 200, 100, 400,
                                     100, 200, 100 };
 */
 
+/* ====  Structs  ================================================================== */
+
+typedef struct NamedVibePattern {
+  char           name[32];
+  VibePattern    pattern;
+} NamedVibePattern;
 
 
-
-// http://stackoverflow.com/questions/12031302/convert-from-long-long-to-int-and-the-other-way-back-in-c
+/* ====  Variables  ================================================================ */
 
 static uint32_t alert_segments_short[] = { 400, 200 };
 static uint32_t alert_segments_very_long[] = { 100, 200, 100, 400,
@@ -56,67 +37,58 @@ static uint32_t alert_segments_very_long[] = { 100, 200, 100, 400,
                                     //800, 200,
                                     800, 400,
                                     100, 200, 100 };
+static uint32_t alert_segments_one_sec[] = { 300, 200, 300, 200 };
 
-typedef struct { char *key; uint32_t *val; } t_symstruct;
-
-static t_symstruct lookuptable[] = {
-  { "short", alert_segments_short },
-  { "very_long", alert_segments_very_long },
-  { "also", alert_segments_short }
+/* First pattern is default pattern */
+static NamedVibePattern named_pattern[3] = {
+  {
+    "short",
+    {
+      .durations = alert_segments_short,
+      .num_segments = ARRAY_LENGTH(alert_segments_short)
+    }
+  },
+  {
+    "very_long",
+    {
+      .durations = alert_segments_very_long,
+      .num_segments = ARRAY_LENGTH(alert_segments_very_long)
+    }
+  },
+  {
+    "one_sec", 
+    {
+      .durations = alert_segments_one_sec,
+      .num_segments = ARRAY_LENGTH(alert_segments_one_sec)
+    }
+  }
 };
 
-#define NKEYS (int) (sizeof(lookuptable)/sizeof(t_symstruct))
 
-VibePattern get_vibe_pattern_by_string(char *pattern_name) {
-  // FIXME: remove
-  if (1 == 1) {
-  return (VibePattern) {
-    .durations = alert_segments_very_long,
-    .num_segments = ARRAY_LENGTH(alert_segments_very_long)
-  };
-  } else {
-    
-    // is the problem char key of variable length?
-    
-    
-    
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Vibe pattern selected: %s", pattern_name);
-  int i;
-  
-  
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "NKEYS: %d", NKEYS);
-  
-  for (i=0; i < NKEYS; i++) {
-    t_symstruct *sym = lookuptable + i*sizeof(t_symstruct);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "? Trying %d", i);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "Hmmmm... [%s]", sym->key);
-    if (strcmp(sym->key, pattern_name) == 0) {
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Success?");
-      return (VibePattern) {
-        .durations = sym->val,
-        .num_segments = ARRAY_LENGTH(sym->val)
-      };
+/* ====  Private functions  ======================================================== */
+
+NamedVibePattern *get_named_pattern_by_name(char *pattern_name) {
+  //
+  NamedVibePattern *curr_pattern    = named_pattern;
+  NamedVibePattern *last_pattern    = named_pattern + sizeof(named_pattern)/sizeof(curr_pattern[0]);
+  while (curr_pattern < last_pattern) {
+    if (strcmp(pattern_name, curr_pattern->name) == 0) {
+      return curr_pattern;
     }
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "(... Nope!)");
+    curr_pattern++;
   }
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "NOOOOOOOOOO!");
-  // FIXME: What should this be?
-  return (VibePattern) {
-    .durations = alert_segments_very_long,
-    .num_segments = ARRAY_LENGTH(alert_segments_very_long)
-  };
-  }
+  return NULL;
 }
 
 
+/* ====  Public functions  ========================================================= */
 
-// Getters
-/*
-uint32_t *get_vibe_pattern_by_string(char *pattern_name) {
-  if (strcmp("very_long", pattern_name)) {
-    
-  } else {
-  return alert_segments_very_long;
+VibePattern get_vibe_pattern_by_name(char *pattern_name) {
+  NamedVibePattern *selected_pattern = get_named_pattern_by_name(pattern_name);
+  if (selected_pattern) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Retrieved vibe pattern '%s'", pattern_name);
+    return selected_pattern->pattern;
   }
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Couldn't find vibe pattern '%s', using default", pattern_name);
+  return named_pattern->pattern;
 }
-*/

@@ -3,7 +3,7 @@
 #include "inttypes.h"
 
 
-/* ====  Fields  =================================================================== */
+/* ====  Structs  ================================================================== */
 
 //#define MISSING_FONT 0
 
@@ -18,6 +18,9 @@ typedef struct SystemFontStruct {
   char        name[FONT_NAME_MAX_LEN];
   char        *font_key;
 } SystemFontStruct;
+
+
+/* ====  Variables  ================================================================ */
 
 /*
 http://www.dafont.com/comfortaa.font
@@ -114,120 +117,3 @@ void unload_all_fonts(void) {
   }
   APP_LOG(APP_LOG_LEVEL_DEBUG, "... All fonts unloaded");
 }
-
-
-
-
-/* ------  DEPRECATED >>>>>>>>  ----------- */
-/*
-void log_font_structs(void) {
-  CustomFontStruct *curr_font = custom_font;
-  CustomFontStruct *last_font = custom_font + sizeof(custom_font)/sizeof(custom_font[0]);
-  while (curr_font < last_font) {
-    log_font_struct("-", curr_font);
-    curr_font++;    
-  }
-}
-*/
-/*
-typedef struct { char *key; char     *val; } t_sys_font_symstruct;
-typedef struct { char *key; uint32_t *val; } t_cust_font_symstruct;
-
-static t_sys_font_symstruct system_fonts_large[] = {
-    { "bitham", FONT_KEY_BITHAM_42_BOLD }, { "roboto", FONT_KEY_ROBOTO_BOLD_SUBSET_49 }
-};
-static t_sys_font_symstruct system_fonts_medium[] = {
-    { "gothic_bold", FONT_KEY_GOTHIC_28_BOLD }
-};
-static t_sys_font_symstruct system_fonts_small[] = {
-    { "gothic_bold", FONT_KEY_GOTHIC_24_BOLD }
-};
-static t_sys_font_symstruct system_fonts_x_small[] = {
-    { "gothic_bold", FONT_KEY_GOTHIC_18_BOLD }
-};
-
-t_sys_font_symstruct get_system_font_resource_id(char *key, t_symstruct[] lookup_table) {
-  int num_keys = (sizeof(lookup_table)/sizeof(t_symstruct));
-  int i;
-    for (i=0; i < num_keys; i++) {
-        t_sys_font_symstruct *sym = lookup_table + i*sizeof(t_sys_font_symstruct);
-        if (strcmp(sym->key, key) == 0)
-            return sym->val;
-    }
-  return MISSING_FONT;
-}
-*/
-/*
-  //s_time_font       = fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD);
-  //s_time_font       = fonts_get_system_font(FONT_KEY_ROBOTO_BOLD_SUBSET_49);
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_62));
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DINEN_SUBSET_62));
-  //s_time_font       = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_COMFORTAA_BOLD_SUBSET_62));
-  //s_date_font       = FONT_KEY_GOTHIC_24_BOLD);
-  //s_countdown_font  = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
-  //s_countdown_font  = fonts_get_system_font(FONT_KEY_GOTHIC_28);
-
-  s_time_font       = fonts_load_custom_font(resource_get_handle(config.time_font_resource_id));  
-  med       = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
-  small  = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
-  x_small = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-  x_small    = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-  */
-
-    /*
-    if (strcmp("comfortaa", font_name)) {
-      return RESOURCE_ID_FONT_COMFORTAA_BOLD_SUBSET_62;
-    }
-    return RESOURCE_ID_FONT_DINEN_SUBSET_62;
-    */
-
-/*
-uint32_t get_system_font_resource_id(char *font_name, font_size size) {
-  t_symstruct[] lookup_table;
-  switch (size) {
-    case LARGE:
-      lookup_table = system_fonts_large;
-      break;
-    case MEDIUM:
-      lookup_table = system_fonts_medium;
-      break;
-    case SMALL:
-      lookup_table = system_fonts_small;
-      break;
-    case X_SMALL:
-      lookup_table = system_fonts_x_small;
-      break;
-    default:
-      return MISSING_FONT;
-      break;
-  }
-  return get_font_resource_id(font_name, lookup_table);
-}
-
-uint32_t get_custom_font_resource_id(char *font_name, font_size size) {
-  if (size == LARGE) {
-    if (strcmp(font_name, "comfortaa")) {
-      / * http://www.dafont.com/comfortaa.font * /
-      return RESOURCE_ID_FONT_COMFORTAA_BOLD_SUBSET_62;
-    }
-    return RESOURCE_ID_FONT_DINEN_SUBSET_62;
-  }
-  return 0;
-}
-
-
-GFont load_font(char *font_name, font_size size) {
-  char resource_id = get_system_font_resource_id(font_name, size);
-  if (resource_id > 0) {
-    return resource_get_handle(resource_id)
-  }
-  resource_id = get_custom_font_resource_id(font_name, size);
-  if (resource_id > 0) {
-    return fonts_load_custom_font(resource_get_handle(resource_id));
-  }
-  return void;
-}
-*/
-
-
-/* ------  <<<<<<<< DEPRECATED  -----------*/
