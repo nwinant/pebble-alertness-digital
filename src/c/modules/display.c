@@ -55,7 +55,7 @@ static GPoint calc_round_point(int32_t angle) {
     .x = (sin_lookup(angle)  * radius / TRIG_MAX_RATIO) + center.x,
     .y = (-cos_lookup(angle) * radius / TRIG_MAX_RATIO) + center.y
   };
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "~ ~ ~ THINGY: %d %d", result.x, result.y);
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "~ ~ ~ THINGY: %d %d", result.x, result.y);
   return result;
 }
 
@@ -121,10 +121,11 @@ static void main_window_load(Window *window) {
     int32_t angle = TRIG_MAX_ANGLE / 10;
     GPoint round_upper_left_point  = calc_round_point(TRIG_MAX_ANGLE - angle);
     GPoint round_upper_right_point = calc_round_point(angle);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "left:  %d %d", round_upper_left_point.x,  round_upper_left_point.y);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "right: %d %d", round_upper_right_point.x, round_upper_right_point.y);
-    printf("DISTANCE %d", round_upper_right_point.x - round_upper_left_point.x);
-    
+    if (DEV_EXCESSIVE_LOGGING) {
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "left:  %d %d", round_upper_left_point.x,  round_upper_left_point.y);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "right: %d %d", round_upper_right_point.x, round_upper_right_point.y);
+      printf("DISTANCE %d", round_upper_right_point.x - round_upper_left_point.x);
+    }
     //countdown_bounds.size.h    = 32;
     countdown_bounds.origin.y  = round_upper_right_point.y - countdown_bounds.size.h + battery_bounds.size.h;
     //connection_bounds.size.w   = connection_bounds.size.w - 10;

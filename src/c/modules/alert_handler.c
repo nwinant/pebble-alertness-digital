@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "vibe_patterns.h"
+#include "vibe_utils.h"
 #include "configuration.h"
 #include "alert_handler.h"
 #include "inttypes.h"
@@ -18,17 +19,11 @@ static uint8_t  alert_interval_remainder;
 static int32_t  curr_time;
 static int32_t  last_alert_time;
 
+
+/* ====  Private functions  ========================================================= */
+
 bool is_quiet_time_in_effect(void) {
   return config.alerts_use_quiet_time && quiet_time_is_active();
-}
-
-bool is_alert_timer_running(void) {
-  
-  return alert_timer_running && !is_quiet_time_in_effect();
-}
-
-uint8_t get_alert_interval_remainder(void) {
-  return alert_interval_remainder;
 }
 
 bool is_alert_potentially_active(void) {
@@ -38,21 +33,20 @@ bool is_alert_potentially_active(void) {
     && !is_quiet_time_in_effect();
 }
 
+
+/* ====  Public functions  ========================================================== */
+
+bool is_alert_timer_running(void) {
+  return alert_timer_running && !is_quiet_time_in_effect();
+}
+
+uint8_t get_alert_interval_remainder(void) {
+  return alert_interval_remainder;
+}
+
 bool is_alert_currently_active(void) {
   return is_alert_potentially_active()
     && ((curr_time != last_alert_time) || DEV_ALERT_AMNESIA);
-}
-
-
-/* ====  The meat  ================================================================= */
-
-void do_alert_vibe(char *name, bool persist) {
-  int repeats = persist ? 30 : 1;
-  VibePattern pattern = get_vibe_pattern_by_name(name);
-  for (int i = 0; i < repeats; i++) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "Queue alert: %i", i);
-    vibes_enqueue_custom_pattern(pattern);
-  }
 }
 
 void update_alert_handler(struct tm *tick_time) {
@@ -69,7 +63,7 @@ void update_alert_handler(struct tm *tick_time) {
          && (curr_min == 0)));
   //APP_LOG(APP_LOG_LEVEL_DEBUG, "Is quiet time in effect? %i", is_quiet_time_in_effect());
   if (is_alert_potentially_active()) {
-    vibes_cancel();
+    cancel_vibes_and_scheduled_vibes();
     curr_time       = (tick_time->tm_hour * 10000) + (tick_time->tm_min * 100);
     last_alert_time = (persist_exists(MESSAGE_KEY_LastAlertTickTime)) ? persist_read_int(MESSAGE_KEY_LastAlertTickTime) : 0;
     if (DEV_EXCESSIVE_LOGGING) {
@@ -79,7 +73,10 @@ void update_alert_handler(struct tm *tick_time) {
     if  (is_alert_currently_active()) {
       persist_write_int(MESSAGE_KEY_LastAlertTickTime, curr_time);
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Alert: %" PRIi32, curr_time);
-      do_alert_vibe(config.alert_vibe_name, true);
+      repeat_vibe_for_duration(
+        get_vibe_pattern_by_name(config.alert_vibe_name),
+        config.alert_duration_sec * 1000,
+        config.alert_repeat_delay_ms);
     }
   }
 }

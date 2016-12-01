@@ -33,12 +33,14 @@ void load_defaults(void) {
       .alerts_enabled         = 1,
       .alerts_use_quiet_time  = true,
       .alert_vibe_name        = "one_sec",
+      .alert_duration_sec     = 58,
+      .alert_repeat_delay_ms  = 100,
       .alert_frequency_mins   = 15,
+      .alert_start_hour       = 9,
+      .alert_end_hour         = 22,
       //.alert_frequency_mins   = 1,
-      //.alert_start_hour       = 9,
-      .alert_start_hour       = 0,
-      //.alert_end_hour         = 22,
-      .alert_end_hour         = 24,
+      //.alert_start_hour       = 0,
+      //.alert_end_hour         = 24,
       .show_connection_status = 1,
       .show_battery_status    = 1,
       .time_font_name         = "time_comfortaa",
@@ -51,7 +53,7 @@ void load_defaults(void) {
 }
 
 
-/* ====  Pulic functions  =========================================================== */
+/* ====  Public functions  ========================================================== */
 
 void load_config(void) {
   load_defaults();
@@ -88,6 +90,9 @@ void load_config(void) {
       : defaults.alerts_enabled,
     
 //    .vibe_alert_name  // FIXME: make configurable!
+    .alert_duration_sec     = defaults.alert_duration_sec, // FIXME: make configurable!
+    .alert_repeat_delay_ms  = defaults.alert_repeat_delay_ms, // FIXME: make configurable!
+    
     
     .alert_frequency_mins = persist_exists(MESSAGE_KEY_AlertFrequency) 
       ? persist_read_int(MESSAGE_KEY_AlertFrequency)
@@ -165,6 +170,9 @@ void update_config(DictionaryIterator *iter, void *context) {
     persist_write_bool(MESSAGE_KEY_AlertsEnabled, alerts_enabled_t->value->int32 == 1);
   }
 //  vibe_alert_name
+//  .alert_duration_sec     = defaults.alert_duration_sec,
+//    .alert_repeat_delay_ms  = defaults.alert_repeat_delay_ms,
+  
   Tuple *alert_frequency_mins_t = dict_find(iter, MESSAGE_KEY_AlertFrequency);
   if (alert_frequency_mins_t) {
     // FIXME: needs more rigorous error-checking...

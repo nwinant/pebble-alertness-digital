@@ -7,15 +7,13 @@
 
 /* ====  Variables  ================================================================ */
 
-static Window        *s_main_window;
+static Window *s_main_window;
 
 
 /* ====  Timing  =================================================================== */
 
 static void update_time(void) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating time");
-  
-  // Get a tm structure
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Updating time");
   time_t temp = time(NULL);
   struct tm *tick_time = localtime(&temp);
   

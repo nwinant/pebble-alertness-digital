@@ -92,16 +92,16 @@ SystemFontStruct *get_system_font_struct_by_name(char *font_name) {
 /* ====  Public functions  ========================================================= */
 
 GFont get_font_by_name(char *font_name) {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Trying to get font: '%s'", font_name);
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Trying to get font: '%s'", font_name);
   CustomFontStruct *cust_font = get_custom_font_struct_by_name(font_name);
   if (cust_font != NULL) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "Retrieving custom font: '%s'", font_name);
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Retrieving custom font: '%s'", font_name);
     possibly_load_custom_font_struct(cust_font);
     return cust_font->instance;
   }
   SystemFontStruct *sys_font = get_system_font_struct_by_name(font_name);
   if (sys_font != NULL) {
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "Retrieving system font: '%s'", font_name);
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Retrieving system font: '%s'", font_name);
     return fonts_get_system_font(sys_font->font_key);
   }
   return NULL;

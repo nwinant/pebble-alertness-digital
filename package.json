@@ -28,7 +28,8 @@
             "EnableFlip",
             "LastAlertTickTime",
             "TimeFont",
-            "DateFormat"
+            "DateFormat",
+            "AlertDurationSec"
         ],
         "projectType": "native",
         "resources": {

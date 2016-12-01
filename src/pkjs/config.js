@@ -207,7 +207,7 @@ module.exports = [
         "type": "select",
         "messageKey": "AlertVibePattern",
         "label": "Vibe Pattern",
-        "defaultValue": "very_long",
+        "defaultValue": "short",
         "options": [
           {
             "label": "Very long",
@@ -216,6 +216,38 @@ module.exports = [
           {
             "label": "Short",
             "value": "short"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "messageKey": "AlertDurationSec",
+        "label": "Repeat vibration for",
+        "defaultValue": "0",
+        "options": [
+          {
+            "label": "Only once",
+            "value": "0"
+          },
+          {
+            "label": "5 seconds",
+            "value": "5"
+          },
+          {
+            "label": "10 seconds",
+            "value": "10"
+          },
+          {
+            "label": "15 seconds",
+            "value": "15"
+          },
+          {
+            "label": "30 seconds",
+            "value": "30"
+          },
+          {
+            "label": "1 minute",
+            "value": "58"
           }
         ]
       },
