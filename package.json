@@ -25,7 +25,6 @@
             "AlertEndHour",
             "ShowConnectionStatus",
             "ShowBatteryStatus",
-            "EnableFlip",
             "LastAlertTickTime",
             "TimeFont",
             "DateFormat",

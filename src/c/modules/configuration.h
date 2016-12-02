@@ -7,7 +7,6 @@
 #define DEFAULT_CONFIG_BUFF_MAX_LEN 32
 
 typedef struct Configuration {
-  bool        invert_layout;
   GColor      main_bg_color;
   GColor      main_fg_color;
   GColor      comps_bg_color;
