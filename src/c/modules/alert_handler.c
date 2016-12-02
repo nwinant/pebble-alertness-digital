@@ -1,6 +1,6 @@
 #include <pebble.h>
-#include "vibe_patterns.h"
-#include "vibe_utils.h"
+#include "../utils/vibe_patterns.h"
+#include "../utils/vibe_utils.h"
 #include "configuration.h"
 #include "alert_handler.h"
 #include "inttypes.h"
@@ -79,4 +79,8 @@ void update_alert_handler(struct tm *tick_time) {
         config.alert_repeat_delay_ms);
     }
   }
+}
+
+void dismiss_current_alert(void) {
+  cancel_vibes_and_scheduled_vibes();
 }

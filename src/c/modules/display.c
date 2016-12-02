@@ -208,7 +208,9 @@ void init_display(Window *new_s_main_window) {
 
 /* ====  Refresh / update  ========================================================= */
 
+//void refresh_display_layout(bool active_alert) {
 void refresh_display_layout(void) {
+  // FIXME: make this available as a callback? - 2016-12-01
   layer_set_hidden((Layer *)s_countdown_layer,  !config.alerts_enabled);
   layer_set_hidden((Layer *)s_connection_layer, !config.show_connection_status);
   layer_set_hidden((Layer *)s_battery_layer,    !config.show_battery_status);

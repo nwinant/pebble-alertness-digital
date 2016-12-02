@@ -22,6 +22,7 @@ typedef struct Configuration {
   uint8_t     alert_frequency_mins;
   uint8_t     alert_start_hour;
   uint8_t     alert_end_hour;
+  bool        alert_dismiss_on_tap;
   char        time_font_name     [DEFAULT_CONFIG_BUFF_MAX_LEN];
   char        date_font_name     [DEFAULT_CONFIG_BUFF_MAX_LEN];
   char        countdown_font_name[DEFAULT_CONFIG_BUFF_MAX_LEN];
@@ -29,6 +30,9 @@ typedef struct Configuration {
   char        date_format        [DEFAULT_CONFIG_BUFF_MAX_LEN];
   bool        show_connection_status;
   bool        show_battery_status;
+  int         double_tap_min_ms;
+  int         double_tap_max_ms;
+  bool        is_silence_required;
 } Configuration;
 
 

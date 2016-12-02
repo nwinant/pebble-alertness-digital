@@ -1,7 +1,6 @@
 #include <pebble.h>
 #include "vibe_patterns.h"
 
-
 /*
 static const uint32_t alert_segments1[] = { 200, 100, 200, 500,
                                     1000, 500,

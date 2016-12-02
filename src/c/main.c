@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "inttypes.h"
+#include "utils/gestures.h"
 #include "modules/configuration.h"
 #include "modules/alert_handler.h"
 #include "modules/display.h"
@@ -38,6 +39,7 @@ static void config_update_handler(DictionaryIterator *iter, void *context) {
 }
 
 static void bluetooth_handler(bool connected) {
+  // FIXME: should this be worked into refresh_display_data()?
   //text_layer_set_text(s_connection_layer, connected ? "..." : "  !");
   text_layer_set_text(get_connection_layer(), connected ? "" : "  !");
 }
@@ -53,33 +55,46 @@ static void battery_handler(BatteryChargeState charge_state) {
   text_layer_set_text(get_battery_layer(), battery_text);
 }
 
+static void double_tap_handler(AccelAxisType axis, int32_t direction) {
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Double-tap!");
+  if (config.alert_dismiss_on_tap) {
+    dismiss_current_alert();
+  }
+}
+
 static void register_handlers(void) {
-  // Configuration
-  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Registering config handler...");
+  // https://developer.pebble.com/docs/c/Foundation/AppMessage/
+  //app_message_register_inbox_dropped()
+  //app_message_register_outbox_sent()
+  //app_message_register_outbox_failed()
   app_message_register_inbox_received(config_update_handler);
-  
-  // TODO: what are the ideal values?
   app_message_open(256, 256);
-  //app_message_open(128, 128);
-  //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
-  // Max size consumes 8200 bytes of heap memory (PTS), potentially more in the future!
+  // TODO: what are the ideal app_message_open() values?
+  //       https://developer.pebble.com/docs/c/Foundation/AppMessage/
+  //       app_message_open(128, 128);
+  //       app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  //       Max size consumes 8200 bytes of heap memory (PTS), potentially more in the future!
   
-  // Ticks
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
-  // Battery & bluetooth
   connection_service_subscribe((ConnectionHandlers) {
     .pebble_app_connection_handler = bluetooth_handler
   });
   battery_state_service_subscribe(battery_handler);
   bluetooth_handler(connection_service_peek_pebble_app_connection());
   battery_handler(battery_state_service_peek());
+  double_tap_service_subscribe(
+    config.double_tap_min_ms, 
+    config.double_tap_max_ms,
+    config.is_silence_required,
+    double_tap_handler);
 }
 
 static void deregister_handlers(void) {
+  double_tap_service_unsubscribe();
   tick_timer_service_unsubscribe();
   connection_service_unsubscribe();
   battery_state_service_unsubscribe();
-  // FIXME: do we need to unsub the config handler?
+  app_message_deregister_callbacks();
 }
 
 
