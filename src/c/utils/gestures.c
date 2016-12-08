@@ -5,11 +5,11 @@
 
 /* ====  Variables  ================================================================ */
 
-static int     min_ms           = 0;
-static int     max_ms           = 0;
-static bool    silence_required = false;
-static int32_t last_tap_ms      = 0;
-void (*callback)(AccelAxisType, int32_t);
+static int      min_ms           = 0;
+static int      max_ms           = 0;
+static bool     silence_required = false;
+static int32_t  last_tap_ms      = 0;
+AccelTapHandler callback         = NULL;
 
 
 /* ====  Private functions  ========================================================= */
@@ -49,25 +49,13 @@ static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
 }
 
 
-/* ====  Public functions  ========================================================== */
+/* ====  External functions  ======================================================== */
 
-/*
-"Good question! There isn't an API to modify the sensitivity of the tap.
-
-"You could, however, create something similar to the tap service using 
-accel_data_service_subscribe() and looking at either the total force 
-along all the axes, or possibly just the Z-axis."
-
-https://developer.pebble.com/guides/events-and-services/accelerometer/
-*/
-
-// http://stackoverflow.com/questions/9410/how-do-you-pass-a-function-as-a-parameter-in-c
-// http://www.cprogramming.com/tutorial/function-pointers.html
 void double_tap_service_subscribe(
-  int min_delay_ms, 
-  int max_delay_ms,
-  bool is_silence_required,
-  void (*callback_func)(AccelAxisType, int32_t)
+  int             min_delay_ms, 
+  int             max_delay_ms,
+  bool            is_silence_required,
+  AccelTapHandler callback_func
 ) {
   min_ms  = min_delay_ms;
   max_ms  = max_delay_ms;

@@ -34,7 +34,7 @@ bool is_alert_potentially_active(void) {
 }
 
 
-/* ====  Public functions  ========================================================== */
+/* ====  External functions  ======================================================== */
 
 bool is_alert_timer_running(void) {
   return alert_timer_running && !is_quiet_time_in_effect();
@@ -52,14 +52,14 @@ bool is_alert_currently_active(void) {
 void update_alert_handler(struct tm *tick_time) {
   uint8_t curr_hour        = tick_time->tm_hour;
   uint8_t curr_min         = tick_time->tm_min;
-  alert_interval_remainder = curr_min % config.alert_frequency_mins;
+  alert_interval_remainder = curr_min % config.alert1.frequency_mins;
   alert_timer_running      = 
-    ((curr_hour >= config.alert_start_hour)
-     || ((config.alert_start_hour - curr_hour == 1)
-         && (60 - curr_min <= config.alert_frequency_mins)))
+    ((curr_hour >= config.alert1.start_hour)
+     || ((config.alert1.start_hour - curr_hour == 1)
+         && (60 - curr_min <= config.alert1.frequency_mins)))
     &&
-    ((curr_hour < config.alert_end_hour)
-     || ((curr_hour = config.alert_end_hour)
+    ((curr_hour < config.alert1.end_hour)
+     || ((curr_hour = config.alert1.end_hour)
          && (curr_min == 0)));
   //APP_LOG(APP_LOG_LEVEL_DEBUG, "Is quiet time in effect? %i", is_quiet_time_in_effect());
   if (is_alert_potentially_active()) {
@@ -74,9 +74,9 @@ void update_alert_handler(struct tm *tick_time) {
       persist_write_int(MESSAGE_KEY_LastAlertTickTime, curr_time);
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Alert: %" PRIi32, curr_time);
       repeat_vibe_for_duration(
-        get_vibe_pattern_by_name(config.alert_vibe_name),
-        config.alert_duration_sec * 1000,
-        config.alert_repeat_delay_ms);
+        get_vibe_pattern_by_name(config.alert1.vibe_name),
+        config.alert1.duration_sec * 1000,
+        config.alert1.repeat_delay_ms);
     }
   }
 }

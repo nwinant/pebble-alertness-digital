@@ -89,7 +89,7 @@ SystemFontStruct *get_system_font_struct_by_name(char *font_name) {
 }
 
 
-/* ====  Public functions  ========================================================= */
+/* ====  External functions  ======================================================== */
 
 GFont get_font_by_name(char *font_name) {
   //APP_LOG(APP_LOG_LEVEL_DEBUG, "Trying to get font: '%s'", font_name);

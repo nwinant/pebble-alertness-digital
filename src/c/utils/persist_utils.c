@@ -1,6 +1,9 @@
 #include <pebble.h>
 #include "persist_utils.h"
 
+
+/* ====  External functions  ======================================================== */
+
 bool load_bool(const uint32_t key, bool default_value) {
   return persist_exists(key) ? persist_read_bool(key) : default_value;
 }

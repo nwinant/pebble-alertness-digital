@@ -66,7 +66,7 @@ static NamedVibePattern named_pattern[3] = {
 
 /* ====  Private functions  ======================================================== */
 
-NamedVibePattern *get_named_pattern_by_name(char *pattern_name) {
+NamedVibePattern *get_named_pattern_by_name(const char *pattern_name) {
   NamedVibePattern *curr_pattern    = named_pattern;
   NamedVibePattern *last_pattern    = named_pattern + sizeof(named_pattern)/sizeof(curr_pattern[0]);
   while (curr_pattern < last_pattern) {
@@ -79,9 +79,9 @@ NamedVibePattern *get_named_pattern_by_name(char *pattern_name) {
 }
 
 
-/* ====  Public functions  ========================================================= */
+/* ====  External functions  ======================================================== */
 
-VibePattern *get_vibe_pattern_by_name(char *pattern_name) {
+VibePattern *get_vibe_pattern_by_name(const char *pattern_name) {
   NamedVibePattern *selected_pattern = get_named_pattern_by_name(pattern_name);
   if (selected_pattern) {
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Retrieved vibe pattern '%s'", pattern_name);

@@ -24,7 +24,7 @@ void duration_repeating_vibe_callback(void *callback_data) {
 }
 
 
-/* ====  Public functions  ========================================================= */
+/* ====  External functions  ======================================================== */
 
 uint32_t calc_vibe_duration(VibePattern *pattern) {
   int result = 0;

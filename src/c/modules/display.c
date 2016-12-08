@@ -251,7 +251,7 @@ void refresh_display_data(struct tm *tick_time) {
     static char countdown_buffer[3];
     //static char countdown_buffer[10]; // FIXME: remove!
     if (is_alert_timer_running()) {
-      snprintf(countdown_buffer, sizeof(countdown_buffer), "%d", config.alert_frequency_mins - get_alert_interval_remainder());
+      snprintf(countdown_buffer, sizeof(countdown_buffer), "%d", config.alert1.frequency_mins - get_alert_interval_remainder());
       // FIXME: remove (parens) stuff
       //snprintf(countdown_buffer, sizeof(countdown_buffer), "%d (%d)", config.alert_frequency_mins - alert_interval_remainder, alert_frequency_mins);
     } else {
