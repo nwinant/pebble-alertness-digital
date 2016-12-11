@@ -26,7 +26,7 @@ typedef struct SystemFontStruct {
 http://www.dafont.com/comfortaa.font
 */
 static CustomFontStruct custom_font[2] = {
-  {"time_comfortaa",        RESOURCE_ID_FONT_COMFORTAA_BOLD_SUBSET_62, NULL},
+  {"time_comfortaa",        RESOURCE_ID_FONT_COMFORTAA_BOLD_SUBSET_58, NULL},
   {"time_dinen",            RESOURCE_ID_FONT_DINEN_SUBSET_62,          NULL}
 };
 

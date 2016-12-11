@@ -30,6 +30,7 @@ typedef struct Configuration {
   char               date_font_name     [DEFAULT_CONFIG_BUFF_MAX_LEN];
   char               countdown_font_name[DEFAULT_CONFIG_BUFF_MAX_LEN];
   char               details_font_name  [DEFAULT_CONFIG_BUFF_MAX_LEN];
+  char               time_separator     [2];
   char               date_format        [DEFAULT_CONFIG_BUFF_MAX_LEN];
   bool               show_connection_status;
   bool               show_battery_status;

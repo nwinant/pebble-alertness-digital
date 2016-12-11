@@ -65,6 +65,7 @@ void load_defaults(void) {
       .date_font_name         = "date_gothic",
       .countdown_font_name    = "countdown_gothic",
       .details_font_name      = "details_gothic",
+      .time_separator         = ":",
       .date_format            = "%a %m-%d",
       .double_tap_min_ms      = 500,
       .double_tap_max_ms      = 3000,
@@ -107,10 +108,11 @@ void load_config(void) {
   load_string(MESSAGE_KEY_TimeFont,   result.time_font_name, defaults.time_font_name, DEFAULT_CONFIG_BUFF_MAX_LEN);
   load_string(MESSAGE_KEY_DateFormat, result.date_format,    defaults.date_format,    DEFAULT_CONFIG_BUFF_MAX_LEN);
   
-  // String defaults which are not yet user-configurable
+  // TODO: String defaults which are not yet user-configurable
   strncpy(result.date_font_name,      defaults.date_font_name,      sizeof(defaults.date_font_name));
   strncpy(result.countdown_font_name, defaults.countdown_font_name, sizeof(defaults.countdown_font_name));
   strncpy(result.details_font_name,   defaults.details_font_name,   sizeof(defaults.details_font_name));
+  strncpy(result.time_separator,      defaults.time_separator,      sizeof(defaults.time_separator));
   
   // Aaaaaaaaand replace the global config:
   config = result;

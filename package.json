@@ -43,7 +43,7 @@
                 {
                     "characterRegex": "[0-9:. ]",
                     "file": "fonts/lg_Comfortaa-Bold.ttf",
-                    "name": "FONT_COMFORTAA_BOLD_SUBSET_62",
+                    "name": "FONT_COMFORTAA_BOLD_SUBSET_58",
                     "targetPlatforms": null,
                     "type": "font"
                 }

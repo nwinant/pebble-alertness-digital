@@ -236,12 +236,13 @@ void refresh_display_layout(void) {
 void refresh_display_data(struct tm *tick_time) {
   // Time
   static char time_buffer[8];
-  strftime(time_buffer, sizeof(time_buffer), clock_is_24h_style() ? "%H:%M" : "%l:%M", tick_time);
+  char time_format[6];
+  snprintf(time_format, sizeof time_format, "%s%s%s", 
+           clock_is_24h_style() ? "%H" : "%l", config.time_separator, "%M");
+  strftime(time_buffer, sizeof(time_buffer), time_format, tick_time);
   text_layer_set_text(s_time_layer, time_buffer);
   
   // Date
-  //static char date_buffer[11];
-  //strftime(date_buffer, sizeof(date_buffer), "%a %b %e", tick_time);
   static char date_buffer[15];
   strftime(date_buffer, sizeof(date_buffer), config.date_format, tick_time);
   text_layer_set_text(s_date_layer, date_buffer);
@@ -249,13 +250,9 @@ void refresh_display_data(struct tm *tick_time) {
   // Countdown
   if (config.alerts_enabled) {
     static char countdown_buffer[3];
-    //static char countdown_buffer[10]; // FIXME: remove!
     if (is_alert_timer_running()) {
       snprintf(countdown_buffer, sizeof(countdown_buffer), "%d", config.alert1.frequency_mins - get_alert_interval_remainder());
-      // FIXME: remove (parens) stuff
-      //snprintf(countdown_buffer, sizeof(countdown_buffer), "%d (%d)", config.alert_frequency_mins - alert_interval_remainder, alert_frequency_mins);
     } else {
-      //snprintf(countdown_buffer, sizeof(countdown_buffer), "-");
       snprintf(countdown_buffer, sizeof(countdown_buffer), " ");
     }
     text_layer_set_text(s_countdown_layer, countdown_buffer);
